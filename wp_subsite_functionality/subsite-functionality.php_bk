@@ -1,0 +1,235 @@
+<?php
+/*
+Plugin Name: GCMW Subsite Functionality Plugin
+Description:Important repeated actions for customising and setting up the subsites are added here. Activate this plugin only on the new subsites as required. Please DONOT activate on the Main site and existing sites or else it will replace all the existing items like categories and custom fields.
+Version: 0.1
+License: GPL
+Author: Br Saket Chaitanya
+Author URI: www.chinmayamission.com
+*/
+
+//Adding categories for subsite
+
+  /*
+Use this functions to add categories
+
+function example_insert_category() {
+	$term = term_exists('Example Category', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+		'Example Category',
+		'category',
+		array(
+		  'description'	=> 'This is an example category created with wp_insert_term.',
+		  'slug' 		=> 'example-category'
+		)
+	);
+endif;
+}
+add_action( 'after_setup_theme', 'example_insert_category' );
+*/
+
+function insert_subsite_categories()
+{
+	$term = term_exists('Other Centres', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Other Centres',
+			'category',
+			array(
+			'description' => 'Other centres in the zone or under this Centre',
+			'slug' => 'other centres'
+			)
+		);
+	endif;
+	
+	$term = term_exists('Centre Activities', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:	
+	wp_insert_term(
+			'Centre Activities',
+			'category',
+			array(
+			'description' => 'Centre local activities',
+			'slug' => 'centre-activities'
+			)
+		);
+	endif;
+	
+	$term = term_exists('Centre News', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Centre News',
+			'category',
+			array(
+			'description' => 'Centre local news',
+			'slug' => 'centre-news'
+			)
+		);
+	endif;
+	
+	$term = term_exists('Centre Events', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Centre Events',
+			'category',
+			array(
+			'description' => 'Centre local events',
+			'slug' => 'centre-events'
+			)
+		);	
+	endif;
+
+	$term = term_exists('Centre Articles', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Centre Articles',
+			'category',
+			array(
+			'description' => 'Centre local articles',
+			'slug' => 'centre-articles'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Gallery', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Gallery',
+			'category',
+			array(
+			'description' => 'Centre local gallery',
+			'slug' => 'centre-gallery'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Featured News', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Featured News',
+			'category',
+			array(
+			'description' => 'Centre local featured news',
+			'slug' => 'featured-news'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Upcoming Events', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Upcoming Events',
+			'category',
+			array(
+			'description' => 'Centre local upcoming events',
+			'slug' => 'upcoming-events'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Flash News', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Flash News',
+			'category',
+			array(
+			'description' => 'Announcements and important news flash',
+			'slug' => 'flash-news'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Centre Downloads', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Centre Downloads',
+			'category',
+			array(
+			'description' => 'Centre local downloads',
+			'slug' => 'centre-downloads'
+			)
+		);	
+	endif;
+		
+	$term = term_exists('Courses', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Courses',
+			'category',
+			array(
+			'description' => 'Courses run by centre',
+			'slug' => 'centre -downloads'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Donation', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'donation',
+			'category',
+			array(
+			'description' => 'Centre donation information',
+			'slug' => 'donation'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Projects', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Projects',
+			'category',
+			array(
+			'description' => 'Centres own Projects',
+			'slug' => 'projects'
+			)
+		);	
+	endif;
+	
+	$term = term_exists('Contact', 'category');
+	if ($term !== 0 && $term !== null):
+	//do nothing
+	else:
+	wp_insert_term(
+			'Contact',
+			'category',
+			array(
+			'description' => 'Centre contact information',
+			'slug' => 'contact'
+			)
+		);	
+	endif;
+}
+
+add_action ('after_setup_theme', 'insert_subsite_categories');	
+
+?>	

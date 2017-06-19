@@ -1,0 +1,3743 @@
+<?php
+/*
+Plugin Name: CCMT Location
+Plugin URI: http://google.co.in
+Description: Plugin for adding location.
+Version: 1.0
+Author: Girish Vas
+Author URI: http://google.co.in
+*/
+
+
+
+    add_action('admin_menu', 'location_admin_menu');
+
+
+    global $wpdb;
+
+
+
+    function location_admin_menu() 
+    {
+    	add_menu_page ('CCMT','CCMT Location','administrator','ccmt-location','display_ccmt_location' );
+    	add_submenu_page('ccmt-location','Center','Center','administrator','center','display_center');
+    	add_submenu_page('ccmt-location','Ashram','Ashram','administrator','ashram','display_ashram');
+    	add_submenu_page('ccmt-location','Temple','Temple','administrator','temple','display_temple');
+        add_submenu_page('ccmt-location','Trust','Trust','administrator','trust','display_trust');
+    	add_submenu_page('ccmt-location','Region','Region','administrator','region','display_region');
+        add_submenu_page('ccmt-location','Committee','Committee','administrator','committee','display_committee');
+        add_submenu_page('ccmt-location','School','School','administrator','school','display_school');
+        add_submenu_page('ccmt-location','CHORD','CHORD','administrator','chord','display_chord');
+    	add_submenu_page('ccmt-location','Region-Country','Region-Country','administrator','region_country','display_reg_country');
+    }
+
+
+    function display_ccmt_location() 
+    {
+    	echo "<div id='l-wrapper'>";
+    	echo "<h1>Location Manager</h1>";
+    	echo "<div class='l-type'>";
+    	echo "<select name='ltype' class='ltype'>";
+    	echo "<option>Select Location Type</option>";
+        echo "<option value='ashram'>Ashram</option>";
+    	echo "<option value='center'>Center</option>";
+    	echo "<option value='temple'>Temple</option>";
+        echo "<option value='trust'>Trust</option>";
+    	echo "<option value='region'>Region</option>";
+    	echo "<option value='committee'>Committee</option>";
+        echo "<option value='school'>School</option>";
+        echo "<option value='chord'>CHORD</option>";
+    	echo "<option value='country_region'>Country-Center</option>";
+    	echo "<option value='region_country'>Region-Country</option>";
+    	echo "</select>";
+    	echo "</div>";
+    	echo "</div>";
+
+        //displaying form for adding New school
+        if(!isset($form0)) {  $form0 = ""; }
+
+            if(isset($school) && $school == true)
+            {
+                    echo "New School Added";
+            }
+
+        $form0 .= "<h3>Add New School</h3>
+        <form name='school' id='school' method='post' action=''>
+        <div class='l-left'>Name:</div>
+        <div class='l-right'>
+        <input type='text' name='school-name' />
+        </div><br/>
+
+        <div class='l-left'>Description:</div>
+        <div class='l-right'>
+        <textarea name='school-description' rows='10' cols='20'></textarea>
+        </div><br/>
+
+        <div class='l-left'>Url:</div>
+        <div class='l-right'>
+        <input type='text' name='school-url' />
+        </div><br/>
+
+        <div class='l-left'>Address:</div>
+        <div class='l-right'>
+        <textarea name='school-address1' rows='10' cols='20'></textarea>
+        </div><br/>
+
+        <div class='l-left'>Country:</div>
+        <div class='l-right'>
+        <select onchange='sstate(this.selectedIndex);' id='country0' name='school-country' >
+        </select>
+        </div><br/>
+
+        <div class='l-left'>State:</div>
+        <div class='l-right'>
+        <select type='text' name='school-state' id='state0'>
+        </select>
+        <script language='javascript'>print_country0('country0');</script>
+        </div><br/>
+
+        <div class='l-left'>City:</div>
+        <div class='l-right'>
+        <input type='text' name='school-city' />
+        </div><br/>
+
+        <div class='l-left'>Pincode:</div>
+        <div class='l-right'>
+        <input type='text' name='school-pincode' />
+        </div><br/>
+
+        <div class='l-left'>Continent:</div>
+        <div class='l-right'>
+        <select name='school-continent' >
+        <option value='Asia'>Asia</option>
+        <option value='Africa'>Africa</option>
+        <option value='North America'>North America</option>
+        <option value='South America'>South America</option>
+        <option value='Antarctica'>Antarctica</option>
+        <option value='Europe'>Europe</option>
+        <option value='Australia'>Australia</option>
+        </select>
+        </div><br/>
+
+        <div class='l-left'>phone:</div>
+        <div class='l-right'>
+        <input type='text' name='school-phone' />
+        </div><br/>
+
+        <div class='l-left'>Email:</div>
+        <div class='l-right'>
+        <input type='text' name='school-email' />
+        </div><br/>
+
+        <div class='l-left'>Affiliation:</div>
+        <div class='l-right'>
+        <input type='text' name='school-affiliation' />
+        </div><br/>
+
+        <input type='hidden' name='submitted-school' id='submitted-school' value='school' />
+        <input type='submit' value='Add School' name='add-school' />
+        </form>" ;
+
+        echo "<div id='l-school'>".$form0."</div>";
+
+
+        //displaying form for adding CORD
+
+        if (!isset($form10)) { $form10 = ""; }
+
+        $form10 .= "<h3>Add CORD Contact</h3>";
+        $form10 .= "<form name='chord' id='chord' method='post' action=''>";
+
+        if(isset($chord) && $chord == true) 
+        {
+            echo "New CHORD Contact Added";
+        }
+
+        $form10 .= "<div class='l-left'>Location:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<input type='text' name='chord-location' />";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>Address 1:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<input type='text' name='chord-address1' />";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>Address 2:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<input type='text' name='chord-address2' />";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>Address 3:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<input type='text' name='chord-address3' />";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>Country:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<select onchange='cstate(this.selectedIndex);' id='country4' name='chord-country' >";
+        $form10 .= "</select>";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>State:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<select type='text' name='chord-state' id='state4'>";
+        $form10 .= "</select>";
+        $form10 .= "<script language='javascript'>print_country4('country4');</script>";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>City:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<input type='text' name='chord-city' />";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>Continent:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<select name='chord-continent' >";
+        $form10 .= "<option value='Asia'>Asia</option>";
+        $form10 .= "<option value='Africa'>Africa</option>";
+        $form10 .= "<option value='North America'>North America</option>";
+        $form10 .= "<option value='South America'>South America</option>";
+        $form10 .= "<option value='Antarctica'>Antarctica</option>";
+        $form10 .= "<option value='Europe'>Europe</option>";
+        $form10 .= "<option value='Australia'>Australia</option>";
+        $form10 .= "</select>";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>Phone:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<input type='text' name='chord-phone' />";
+        $form10 .= "</div><br/>";
+
+        $form10 .= "<div class='l-left'>Email:</div>";
+        $form10 .= "<div class='l-right'>";
+        $form10 .= "<input type='text' name='chord-email' />";
+        $form10 .= "</div><br/>";
+
+        $form10 .="<input type='hidden' name='submitted-chord' id='submitted-chord' value='chord' />";
+        $form10 .="<input type='submit' value='Add Chord' name='add-chord' />";
+
+        $form10 .= "</form>";
+        echo "<div id='l-chord'>".$form10."</div>";
+
+
+        //displaying form for adding for adding committee members
+        if (!isset($form9)) { $form9 = ""; }
+
+        $form9 .= "<h3>Add Committee Member</h3>";
+        $form9 .= "<form name='committee' id='committee' method='post' action=''>";
+        if(isset($committee) && $committee == true) 
+        {
+    	  echo "New committee Added";
+        }
+    	$args1['role'] = 'ccmt_member';
+        $blogusers = get_users($args1);
+    	$form9 .= "<div class='l-left'>User:</div>";
+    	$form9 .= "<div class='l-right'>";
+    	$form9 .= "<select name='committee-user'>";
+        foreach ($blogusers as $user) 
+        {
+            $form9 .= '<option value='.$user->display_name . '>' . $user->display_name . '</option>';
+        }
+        $form9 .="</select>";
+    	$form9 .="<div style='text-align: right; padding-right: 225px; margin-top: -21px;'><a href='http://gcmw.prtouch.com/wp-admin/user-new.php/'>Register for a user</a></div>";
+        $form9 .= "</div><br/>";
+        $form9 .= "<div class='l-left'>Centre:</div>";
+        $form9 .= "<div class='l-right'>";
+
+    	global $wpdb;
+    	$form9 .= "<select name = 'committee-center'>";
+    	foreach($wpdb->get_results("select name,id from wp_location WHERE `location_type` LIKE 'centre'") as $key => $page)
+        {
+    	   $form9 .= "<option value='".$page->name ."'>" .$page->name ."</option>";
+    	}
+
+    	$form9 .= "</select>";
+        $form9 .= "</div><br/>";
+
+    	$form9 .= "<div class='l-left'>Member Type:</div>";
+    	$form9 .= "<div class='l-right'>";
+    	$form9 .= "<select name='committee-type' >";
+    	$form9 .= "<option value='president'>President</option>";
+    	$form9 .= "<option value='treasurer'>Treasurer</option>";
+    	$form9 .= "<option value='secretary'>Secretary</option>";
+    	$form9 .= "<option value='acharya'>Acharya</option>";
+    	$form9 .= "</select>";
+    	$form9 .= "</div><br/>";
+
+    	$form9 .= "<div class='l-left'>Name:</div>";
+    	$form9 .= "<div class='l-right'>";
+    	$form9 .= "<input type='text' name='committee-name' />";
+    	$form9 .= "</div><br/>";
+
+    	$form9 .= "<div class='l-left'>Phone:</div>";
+    	$form9 .= "<div class='l-right'>";
+    	$form9 .= "<input type='text' name='committee-phone' />";
+    	$form9 .= "</div><br/>";
+
+    	$form9 .= "<div class='l-left'>Email</div>";
+    	$form9 .= "<div class='l-right'>";
+    	$form9 .= "<input type='text' name='committee-email' />";
+    	$form9 .= "</div><br/>";
+
+    	$form9 .="<input type='hidden' name='submitted-committee' id='submitted-committee' value='committee' />";
+    	$form9 .="<input type='submit' value='Add Committee' name='add-committee' />";
+
+    	$form9 .= "</form>";
+
+        echo "<div id='l-committee'>".$form9."</div>";
+
+        if (!isset($form8)) { $form8 = ""; }
+
+        //displaying form for adding new trusts
+
+        $form8 .= "<h3>Add New Trust</h3>";
+        $form8 .= "<form name='trust' id='trust' method='post' action=''>";
+
+        if(isset($trust) && $trust == true) 
+        {
+                echo "New Trust Added";
+        }
+
+        $form8 .= "<div class='l-left'>Name:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-name' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Email:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-email' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Phone:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-phone' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Fax:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-fax' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Description:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<textarea name='trust-description' rows='10' cols='20'></textarea>";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Activities:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-activities' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Url:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-url' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Address 1:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-address1' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Address 2:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-address2' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Address 3:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-address3' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Country:</div>";
+        $form8 .= "<div class='l-right'>";    
+        $form8 .= "<select onchange='ustate(this.selectedIndex);' id='country8' name='trust-country' >";
+        $form8 .= "</select>";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>State:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<select type='text' name='trust-state' id='state8'>";
+        $form8 .= "</select>";
+        $form8 .= "<script language='javascript'>print_country8('country8');</script>";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>City:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-city' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Continent:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<select name='trust-continent' >";
+        $form8 .= "<option value='Asia'>Asia</option>";
+        $form8 .= "<option value='Africa'>Africa</option>";
+        $form8 .= "<option value='North America'>North America</option>";
+        $form8 .= "<option value='South America'>South America</option>";
+        $form8 .= "<option value='Antarctica'>Antarctica</option>";
+        $form8 .= "<option value='Europe'>Europe</option>";
+        $form8 .= "<option value='Australia'>Australia</option>";
+        $form8 .= "</select>";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Longitude:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-longitude' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .= "<div class='l-left'>Latitude:</div>";
+        $form8 .= "<div class='l-right'>";
+        $form8 .= "<input type='text' name='trust-latitude' />";
+        $form8 .= "</div><br/>";
+
+        $form8 .="<input type='hidden' name='submitted-trust' id='submitted-trust' value='trust' />";
+        $form8 .="<input type='submit' value='Add Trust' name='add-trust' />";
+
+        $form8 .= "</form>";
+
+        echo "<div id='l-trust'>".$form8."</div>";
+
+        if (!isset($form1)) { $form1 = ""; }
+
+        //displaying form for adding for new ashrams
+
+        $form1 .= "<h3>Add New Ashram</h3>";
+        $form1 .= "<form name='ashram' id='ashram' method='post' action=''>";
+
+    	if(isset($ashram) && $ashram == true) 
+        {
+    		echo "New Ashram Added";
+    	}
+        $form1 .= "<div class='l-left'>Name:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-name' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Description:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<textarea name='ashram-description' rows='10' cols='20'></textarea>";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Url:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-url' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Phone:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-phone' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Fax:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-fax' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Email:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-email' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Acharya:</div>";
+        $form1 .= "<div class='l-right'>";
+        
+        $form1 .= "<select name = 'ashram-acharya'>";
+        $form1 .= "<option value=''>Select Acharya Here</option>";
+
+        global $wpdb;
+        foreach($wpdb->get_results("SELECT id,profile_id,salutation,last_name FROM `wp_acharya` ORDER BY salutation,last_name ASC") as $key => $row)
+        {
+           $form1 .= "<option value='" . $row->profile_id ."'>" . $row->profile_id . "::" .$row->salutation." ". $row->last_name ."</option>";
+        }
+        $form1 .= "</select>";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>President:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-president' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Secretary:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-secretary' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Treasurer:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-treasurer' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Address 1:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<textarea name='ashram-address1' rows='10' cols='20'></textarea>";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Country:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<select onchange='lstate(this.selectedIndex);' id='country1' name='ashram-country' >";
+        $form1 .= "</select>";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>State:</div>";
+        $form1 .= "<div class='l-right'>";// 
+        $form1 .= "<select type='text' name='ashram-state' id='state1'>";
+        $form1 .= "</select>";
+        $form1 .= "<script language='javascript'>print_country1('country1');</script>";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>City:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-city' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Zip:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-zip' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Continent:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<select name='location-continent' >";
+        $form1 .= "<option value='Asia'>Asia</option>";
+        $form1 .= "<option value='Africa'>Africa</option>";
+        $form1 .= "<option value='North America'>North America</option>";
+        $form1 .= "<option value='South America'>South America</option>";
+        $form1 .= "<option value='Antarctica'>Antarctica</option>";
+        $form1 .= "<option value='Europe'>Europe</option>";
+        $form1 .= "<option value='Australia'>Australia</option>";
+        $form1 .= "</select>";
+        $form1 .= "</div>";
+        $form1 .= "<div class='l-left'>Trust:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<select name='location-trust' >";
+
+        global $wpdb;
+        foreach($wpdb->get_results("SELECT distinct name FROM `wp_location` where `location_type` like 'trust'") as $key => $row)
+        {
+            $form1 .= "<option value='" . $row->name ."'>" . $row->name ."</option>";
+        }
+
+        $form1 .= "</select>";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Latitude:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-latitude' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Longitude:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-longitude' />";
+        $form1 .= "</div>";
+
+        $form1 .= "<div class='l-left'>Contact:</div>";
+        $form1 .= "<div class='l-right'>";
+        $form1 .= "<input type='text' name='ashram-contact' />";
+        $form1 .= "</div>";
+
+        $form1 .="<input type='hidden' name='submitted-ashram' id='submitted-ashram' value='ashram' />";
+        $form1 .="<input type='submit' value='Add ashram' name='add-ashram' />";
+
+        $form1 .= "</form>";
+        echo "<div id='l-ashram'>".$form1."</div>";  
+
+
+        //displaying form for adding new center
+        if(!isset($form2)) {  $form2 = ""; }
+
+        $form2 .= "<h3>Add New Center</h3>";
+        $form2 .= "<form enctype='multipart/form-data' name='center' id='center' method='post' action=''>";   	
+
+    	if(isset($center) && $center == true) 
+        {
+    		echo "New Center Added";
+    	}
+
+    	$form2 .= "<div class='l-left'>Name:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-name' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Description:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<textarea name='location-description' rows='10' cols='20'></textarea>";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Url:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-url' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Phone:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-phone' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Fax:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-fax' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Email:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-email' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Acharya:</div>";
+    	$form2 .= "<div class='l-right'>";
+       
+    	$form2 .= "<select name = 'location-acharya'>";
+        $form2 .= "<option value=''>Select Acharya Here</option>";
+
+        global $wpdb;
+        foreach($wpdb->get_results("SELECT id,profile_id,salutation,last_name FROM `wp_acharya` ORDER BY salutation,last_name ASC") as $key => $row)
+        {
+           $form2 .= "<option value='" . $row->profile_id ."'>" . $row->profile_id . "::" .$row->salutation." ". $row->last_name ."</option>";
+        }
+        $form2 .= "</select>";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>President:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-president' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Secretary:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-secretary' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Treasurer:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-treasurer' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Address 1:</div>";
+    	$form2 .= "<div class='l-right'>";
+        $form2 .= "<textarea name='location-address1' rows='10' cols='20'></textarea>";
+    	$form2 .= "</div>";
+
+        $form2 .= "<div class='l-left'>Address 2:</div>";
+        $form2 .= "<div class='l-right'>";
+        $form2 .= "<textarea name='location-address2' rows='10' cols='20'></textarea>";
+        $form2 .= "</div>";
+
+        $form2 .= "<div class='l-left'>Address 3:</div>";
+        $form2 .= "<div class='l-right'>";
+        $form2 .= "<textarea name='location-address3' rows='10' cols='20'></textarea>";
+        $form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Country:</div>";
+    	$form2 .= "<div class='l-right'>";
+        $form2 .= "<select onchange='lstate(this.selectedIndex);' id='country1' name='location-country' >";
+        $form2 .= "</select>";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>State:</div>";
+    	$form2 .= "<div class='l-right'>";
+        $form2 .= "<select type='text' name='location-state' id='state1'>";
+        $form2 .= "</select>";
+        $form2 .= "<script language='javascript'>print_country1('country1');</script>";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>City:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-city' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Continent:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<select name='location-continent' >";
+    	$form2 .= "<option value='Asia'>Asia</option>";
+    	$form2 .= "<option value='Africa'>Africa</option>";
+    	$form2 .= "<option value='North America'>North America</option>";
+    	$form2 .= "<option value='South America'>South America</option>";
+    	$form2 .= "<option value='Antarctica'>Antarctica</option>";
+    	$form2 .= "<option value='Europe'>Europe</option>";
+    	$form2 .= "<option value='Australia'>Australia</option>";
+    	$form2 .= "</select>";
+    	$form2 .= "</div>";
+    	$form2 .= "<div class='l-left'>Trust:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<select name='location-trust' >";
+
+        global $wpdb;
+    	foreach($wpdb->get_results("SELECT distinct name FROM `wp_location` where `location_type` like 'trust'") as $key => $row)
+        {
+            $form2 .= "<option value='" . $row->name ."'>" . $row->name ."</option>";
+        }
+
+    	$form2 .= "</select>";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Latitude:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-latitude' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Longitude:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-longitude' />";
+    	$form2 .= "</div>";
+
+    	$form2 .= "<div class='l-left'>Contact:</div>";
+    	$form2 .= "<div class='l-right'>";
+    	$form2 .= "<input type='text' name='location-contact' />";
+    	$form2 .= "</div>";
+
+    	$form2 .="<input type='hidden' name='submitted-center' id='submitted-center' value='centre' />";
+    	$form2 .="<input type='submit' value='Add Center' name='add-center' />";
+
+        $form2 .= "</form>";
+
+        echo "<div id='l-center'>".$form2."</div>";
+        if  (!isset($form3)) {  $form3 = ""; }
+
+        $form3 .= "<h3>Add New Temple</h3>";
+        $form3 .= "<form name='temple' id='temple' method='post' action=''>";
+
+        if(isset($temple) && $temple == true) 
+        {
+                echo "New temple Added";
+        }
+
+        $form3 .= "<div class='l-left'>Name:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<input type='text' name='temple-name' />";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Description:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<textarea name='temple-description' rows='10' cols='20'></textarea>";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Url:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<input type='text' name='temple-url' />";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Deity:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<input type='text' name='temple-deity' />";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Consecrated On:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<input type='text' name='temple-date' id='datepicker' />";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Address 1:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<textarea name='temple-address1' rows='10' cols='20'></textarea>";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Address 2:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<textarea name='temple-address2' rows='10' cols='20'></textarea>";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Zip :</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<textarea name='temple-address3' rows='10' cols='20'></textarea>";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Country:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<select onchange='tstate(this.selectedIndex);' id='country2' name='temple-country' >";
+        $form3 .= "</select>";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>State:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<select name='temple-state' id='state2'>";
+        $form3 .= "</select>";
+        $form3 .= "<script language='javascript'>print_country2('country2');</script>";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>City:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<input type='text' name='temple-city' />";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Continent:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<select name='temple-continent' >";
+        $form3 .= "<option value='Asia'>Asia</option>";
+        $form3 .= "<option value='Africa'>Africa</option>";
+        $form3 .= "<option value='North America'>North America</option>";
+        $form3 .= "<option value='South America'>South America</option>";
+        $form3 .= "<option value='Antarctica'>Antarctica</option>";
+        $form3 .= "<option value='Europe'>Europe</option>";
+        $form3 .= "<option value='Australia'>Australia</option>";
+        $form3 .= "</select>";
+        $form3 .= "</div>";
+
+        $form3 .= "<div class='l-left'>Latitude:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<input type='text' name='temple-latitude' />";
+        $form3 .= "</div>";
+        $form3 .= "<div class='l-left'>Longitude:</div>";
+        $form3 .= "<div class='l-right'>";
+        $form3 .= "<input type='text' name='temple-longitude' />";
+        $form3 .= "</div>";
+
+        $form3 .="<input type='hidden' name='submitted-temple' id='submitted-temple' value='temple' />";
+        $form3 .="<input type='submit' value='Add temple' name='add-temple' />";
+        $form3 .= "</form>";
+        echo "<div id='l-temple'>".$form3."</div>";
+
+
+        //displaying form for adding new region
+        if  (!isset($form4)) {  $form4 = ""; }
+        $form4 .= "<h3>Add New Region</h3>";
+        $form4 .= "<form name='region' id='region' method='post' action=''>";
+        if(isset($region) && $region == true) 
+        {
+                echo "New Region Added";
+        }
+
+        $form4 .= "<div class='l-left'>Region:</div>";
+        $form4 .= "<div class='l-right'>";
+        $form4 .= "<input type='text' name='region-name' />";
+        $form4 .= "</div>";
+
+     	$form4 .="<input type='hidden' name='submitted-region' id='submitted-region' value='region' />";
+        $form4 .="<input type='submit' value='Add region' name='add-region' />";
+    	$form4 .= "</form>";
+        echo "<div id='l-region'>".$form4."</div>";
+
+        if  (!isset($form5)) {  $form5 = ""; }
+    	$form5 .= "<h3>Add New Country-Center</h3>";
+    	$form5 .= "<form name='country-center' id='country-center' method='post' action=''>";
+        if(isset($country_center) && $country_center == true) 
+        {
+                echo "New Country-Region Added";
+        }
+    	$form5 .= "<div class='l-left'>Country:</div>";
+    	$form5 .= "<div class='l-right'>";
+        $form5 .= "<select onchange='rstate(this.selectedIndex);' id='country3' name='center_country' >";
+    	$form5 .= "</select>";
+        $form5 .= "<script language='javascript'>print_country3('country3');</script>";
+        $form5 .= "</div>";
+    	$form5 .= "<div class='l-left'>Expand into :</div>";
+    	$form5 .= "<div class='l-right'>";
+    	$form5 .= "State <input type='radio' class='expand-state' name='expand' value='2' > ";
+    	$form5 .= "City <input type='radio' name='expand' value='1'> ";
+    	$form5 .= "Center <input type='radio' name='expand' value='0' checked='checked'>";
+    	$form5 .= "</div>";
+
+    	$form5 .="<input type='hidden' name='submitted-country-center' id='submitted-country-center' value='country-center' />";
+        $form5 .="<input type='submit' value='Add Country-Cener' name='add-country-center' />";
+    	$form5 .= "</form>";
+        echo "<div id='l-country-region'>".$form5."</div>";
+
+
+        //displaying form for adding new region and country
+        if  (!isset($form6)) {  $form6 = ""; }
+        $form6 .= "<h3>Add New Region & Country</h3>";
+        $form6 .= "<form name='region_country' id='reg_country' method='post' action=''>";
+        if(isset($region_country) && $region_country == true) 
+        {
+                    echo "New Region-Country Added";
+        }	
+
+        $form6 .= "<div class='l-left'>Region:</div>";
+        $form6 .= "<div class='l-right'>";
+    	$form6 .= "<select type='text' name='reg_country' id='reg_country'>";
+
+        global $wpdb;
+    	foreach($wpdb->get_results("SELECT * FROM `wp_region`") as $key => $row)
+        {
+        $form6 .= "<option value='" . $row->id ."'>" . $row->region ."</option>";
+        }
+        $form6 .= "</select>";
+        $form6 .= "</div>";
+        $form6 .= "<div class='l-left'>Country:</div>";
+        $form6 .= "<div class='l-right'>";
+        $form6 .= "<select id='country4' name='region_country' >";
+        $form6 .= "</select>";
+        $form6 .= "<script language='javascript'>print_country3('country4');</script>";
+        $form6 .= "</div>";
+        $form6 .="<input type='hidden' name='submitted-region-country' id='submitted-region-country' value='region-country' />";
+        $form6 .="<input type='submit' value='Add Region-Country' name='add-country-center' />";
+        $form6 .= "</form>";
+        echo "<div id='l-region-country'>".$form6."</div>";
+
+
+
+        //displaying form for adding a new state center
+        if  (!isset($form7)) {  $form7 = ""; }
+
+            $form7 .= "<h3>Add New State-Center</h3>";
+            $form7 .= "<form name='state-center' id='state-center' method='post' action=''>";
+
+            if(isset($state_center) && $state_center == true) {
+                    echo "New State-Center Added";
+            }
+
+            $form7 .= "<div class='l-left'>State:</div>";
+            $form7 .= "<div class='l-right'>";
+            $form7 .= "<select type='text' class='center_state' name='center_state' id='state3'>";
+            $form7 .= "</select>";
+            $form7 .= "</div>";
+    		$form7 .= "<div class='l-left'>Expand into :</div>";
+            $form7 .= "<div class='l-right'>";
+            $form7 .= "City <input type='radio' class='expand'  name='expand' value='1'> ";
+            $form7 .= "Center <input type='radio' name='expand' value='0' checked='checked'>";
+            $form7 .= "</div>";
+    		$form7 .="<input type='hidden' name='submitted-state-center' id='submitted-state-center' value='state-center' />";
+            $form7 .="<input type='submit' value='Add State-Cener' name='add-state-center' />";
+            $form7 .= "</form>";
+            echo "<div id='expand2' style='float:right; position:relative; width:500px;display:none;'>". $form7."</div>" ;
+
+?>
+
+<script type='text/javascript' src='/wp-content/plugins/wp_location/js/jquery-1.9.1.min.js'></script>
+<script type='text/javascript' src='/wp-content/plugins/wp_location/datepicker/jquery-ui.js'></script>
+<link rel="stylesheet" href="/wp-content/plugins/wp_location/datepicker/jquery-ui.css" />
+<script type="text/javascript" language="javascript">
+
+    jQuery(document).ready(function () {
+       
+       jQuery(".ltype").bind("change", function () {
+
+        	var lname = jQuery(this).val();
+            
+        	if(lname == 'ashram') {
+        		jQuery('#l-ashram').show();
+                jQuery('#l-center').hide();
+                jQuery('#l-acharya').hide();
+                jQuery('#l-chord').hide();
+        		jQuery('#l-temple').hide();
+                        jQuery('#l-committee').hide();
+        		jQuery('#l-school').hide();
+        		jQuery('#l-region').hide();
+                        jQuery('#l-trust').hide();
+        		jQuery('#l-country-region').hide();
+        		jQuery('#l-region-country').hide();
+
+	           } 
+               else if (lname =='center' ) {
+
+        		jQuery('#l-center').show();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-acharya').hide();
+                jQuery('#l-chord').hide();
+        		jQuery('#l-school').hide();
+                        jQuery('#l-committee').hide();
+        		jQuery('#l-temple').hide();
+        		jQuery('#l-region').hide();
+                        jQuery('#l-trust').hide();
+        		jQuery('#l-country-region').hide();
+        		jQuery('#l-region-country').hide();
+	           } 
+               else if (lname =='temple' ) {
+
+        		jQuery('#l-temple').show();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-chord').hide();
+                        jQuery('#l-committee').hide();
+        		jQuery('#l-school').hide();
+        		jQuery('#l-center').hide();
+                jQuery('#l-acharya').hide();
+        		jQuery('#l-region').hide();
+                        jQuery('#l-trust').hide();
+        		jQuery('#l-country-region').hide();
+        		jQuery('#l-region-country').hide();
+
+	           } 
+               else if (lname =='region' ) {
+
+                jQuery('#l-region').show();
+                jQuery('#l-school').hide();
+                jQuery('#l-chord').hide();
+		        jQuery('#l-temple').hide();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-committee').hide();
+                jQuery('#l-center').hide();
+                jQuery('#l-trust').hide();
+                jQuery('#l-acharya').hide();
+	            jQuery('#l-country-region').hide();
+	            jQuery('#l-region-country').hide();
+
+                } 
+                else if (lname =='country_region' ) {
+                jQuery('#l-country-region').show();
+                jQuery('#l-region').hide();
+                jQuery('#l-acharya').hide();
+                jQuery('#l-chord').hide();
+                jQuery('#l-school').hide();
+                jQuery('#l-committee').hide();
+                jQuery('#l-temple').hide();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-center').hide();
+                jQuery('#l-trust').hide();
+		        jQuery('#l-region-country').hide();
+
+                } 
+                else if (lname =='region_country' ) {
+
+                jQuery('#l-country-region').hide();
+                jQuery('#l-region').hide();
+                jQuery('#l-temple').hide();
+                jQuery('#l-trust').hide();
+                jQuery('#l-school').hide();
+                jQuery('#l-committee').hide();
+                jQuery('#l-chord').hide();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-acharya').hide();
+                jQuery('#l-center').hide();
+                jQuery('#l-region-country').show();
+
+                } 
+                else if (lname == 'school' ) {
+
+    	        jQuery('#l-school').show();
+                jQuery('#l-trust').hide();
+                jQuery('#l-committee').hide();
+                jQuery('#l-chord').hide();
+    	        jQuery('#l-center').hide();
+    	        jQuery('#l-ashram').hide();
+    	        jQuery('#l-temple').hide();
+    	        jQuery('#l-region').hide();
+                jQuery('#l-acharya').hide();
+    	        jQuery('#l-country-region').hide();
+                jQuery('#l-region-country').hide();
+
+                } 
+                else if (lname == 'chord' ) {
+
+                jQuery('#l-chord').show();
+                jQuery('#l-school').hide();
+                jQuery('#l-trust').hide();
+                jQuery('#l-committee').hide();
+                jQuery('#l-acharya').hide();
+                jQuery('#l-center').hide();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-temple').hide();
+                jQuery('#l-region').hide();
+                jQuery('#l-country-region').hide();
+                jQuery('#l-region-country').hide();
+
+                } 
+                else if (lname == 'acharya' ) {
+
+                jQuery('#l-acharya').show();
+                jQuery('#l-school').hide();
+                jQuery('#l-trust').hide();
+                jQuery('#l-chord').hide();
+                jQuery('#l-committee').hide();
+                jQuery('#l-center').hide();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-temple').hide();
+                jQuery('#l-region').hide();
+                jQuery('#l-country-region').hide();
+                jQuery('#l-region-country').hide();
+
+	            } else if (lname == 'trust' ) {
+
+                jQuery('#l-trust').show();
+	            jQuery('#l-committee').hide();
+                jQuery('#l-center').hide();
+                jQuery('#l-chord').hide();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-temple').hide();
+                jQuery('#l-region').hide();
+                jQuery('#l-country-region').hide();
+                jQuery('#l-region-country').hide();
+                jQuery('#l-acharya').hide();
+
+                } 
+                else if (lname == 'committee' ) {
+
+                jQuery('#l-committee').show();
+                jQuery('#l-center').hide();
+	            jQuery('#l-trust').hide();
+                jQuery('#l-ashram').hide();
+                jQuery('#l-acharya').hide();
+                jQuery('#l-temple').hide();
+                jQuery('#l-region').hide();
+                jQuery('#l-chord').hide();
+                jQuery('#l-country-region').hide();
+                jQuery('#l-region-country').hide();
+                }
+        });
+    });
+
+    $(document).ready(function() {
+
+        $("input[name$='expand']").click(function() {
+            var test = $(this).val();
+            $("#expand" + test).show();
+        });
+
+        $('select.ltype option[value="0"]').attr('selected', true);
+	        jQuery('#l-school').hide();
+	        jQuery('#l-center').hide();
+            jQuery('#l-acharya').hide();
+	        jQuery('#l-ashram').hide();
+	        jQuery('#l-temple').hide();
+	        jQuery('#l-chord').hide();
+		    jQuery('#l-trust').hide();
+            jQuery('#l-committee').hide();
+	        jQuery('#l-country-region').hide();
+	        jQuery('#l-region-country').hide();
+
+        });
+
+        $('.city_tags_select a').click(function() {
+        var value = $(this).text();    
+        $('input[name=expand-city]').val(value)
+        $('#expand-city').show();
+        return false;
+    });
+
+    function gstate(abc) {
+    print_state('state',abc);
+    }
+
+    function cstate(hij) {
+    print_state4('state4',hij);
+    }
+
+    function pstate(cvb) {
+    print_state7('state7',cvb);
+    }
+
+
+    function ustate(efg) {
+    print_state8('state8',efg);
+    }
+
+    function lstate(xyz) {
+    print_state1('state1',xyz);
+    }
+
+    function sstate(stu) {
+    print_state0('state0',stu);
+    }
+
+    function tstate(pqr) {
+    print_state2('state2',pqr);
+    }
+
+    function rstate(lmn) {
+    print_state3('state3',lmn);
+    }
+
+    jQuery(function() {
+        jQuery( "#datepicker" ).datepicker({
+          changeMonth: true,
+          changeYear: true,
+          yearRange: '-100y:c+nn',
+          dateFormat: 'yy-mm-dd'
+        });
+    });
+</script>
+
+
+<?php
+
+     } //function display ccmt location ends
+
+
+    /*editing and deleting committees */
+    function display_committee() 
+    {
+    	global $wpdb;
+    	if($_GET['delete-committee']) 
+        {
+
+            $ad = $_GET['delete-committee'];
+
+            $wpdb->query(
+                    $wpdb->prepare(
+                            "
+                                DELETE FROM wp_committee
+                                WHERE id = %d
+                            ",
+                            $ad
+                    )
+            );
+            echo "Record Deleted for ID ".$ad;
+        }
+
+    	if($_GET['update-committee']) 
+        {
+
+            $cid = $_GET['update-committee'];
+            echo "Update Committee";
+            $wa = $wpdb->get_results("SELECT * FROM `wp_committee` WHERE `id` = $cid");
+            $ucommittee ='';
+            $ucommittee .="<form method='post' action=''>";
+            $ucommittee .= "<div class='l-left'>User:</div>";
+            $ucommittee .= "<div class='l-right'>";
+            $ucommittee .= "<input type='text' name='ucommittee-user' value='".$wa[0]->user."' />";
+            $ucommittee .= "</div>";
+
+            $ucommittee .= "<div class='l-left'>Centre:</div>";
+            $ucommittee .= "<div class='l-right'>";
+            $ucommittee .= "<input type='text' name='ucommittee-centre' value='".$wa[0]->center."'/>";
+            $ucommittee .= "</div>";
+
+            $ucommittee .= "<div class='l-left'>Member Type:</div>";
+            $ucommittee .= "<div class='l-right'>";
+            $ucommittee .= "<input type='text' name='ucommittee-type' value='".$wa[0]->member_type."' />";
+            $ucommittee .= "</div>";
+
+            $ucommittee .= "<div class='l-left'>Name:</div>";
+            $ucommittee .= "<div class='l-right'>";
+            $ucommittee .= "<input type='text' name='ucommittee-name' value='".$wa[0]->name."' />";
+            $ucommittee .= "</div>";
+
+            $ucommittee .= "<div class='l-left'>Phone:</div>";
+            $ucommittee .= "<div class='l-right'>";
+            $ucommittee .= "<input type='text' name='ucommittee-phone' value='".$wa[0]->phone."' />";
+            $ucommittee .= "</div>";
+
+            $ucommittee .= "<div class='l-left'>Email:</div>";
+            $ucommittee .= "<div class='l-right'>";
+            $ucommittee .= "<input type='text' name='ucommittee-email' value='".$wa[0]->email."' />";
+            $ucommittee .= "</div>";
+
+            $ucommittee .="<input type='hidden' name='update-committee' id='update-committee' value='committee' />";
+            $ucommittee .="<input type='submit' value='Update committee' />";
+
+            $ucommittee .="</form>";
+
+            echo "<div id='u-committee' style='width:800px;'>".$ucommittee."</div>";
+
+            if($_POST['update-committee'])     
+            {
+                $cid = $_GET['update-committee'];
+                $cuser = $_POST['ucommittee-user'];
+                $ccentre = $_POST['ucommittee-centre'];
+                $cmember = $_POST['ucommittee-type'];
+                $cname = $_POST['ucommittee-name'];
+                $cphone = $_POST['ucommittee-phone'];
+                $cemail = $_POST['ucommittee-email'];
+
+                $wpdb->update(
+                            'wp_committee',
+                            array(
+                                'user' => $cuser,       // string
+                                'center' => $ccentre,
+                                'member_type' => $cmember,
+                                'name' => $cname,
+                                'phone' => $cphone,
+                                'email' => $cemail,
+
+                            ),
+                            array( 'ID' => $cid ),
+                            array(
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s'
+                            ),
+                            array( '%d' )
+                        );
+            }
+        }
+
+    	//pagination
+    	$num_committee= $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_committee`");
+    	$n_group = $num_committee[0]->total_nr;
+    	$n_x_group = 49;
+    	$n_pages = (($n_group / $n_x_group) < 1 ? 1 : ($n_group / $n_x_group));
+    	$p=0;
+
+       if( isset($_REQUEST['p'])) 
+        {
+    		$p=$_REQUEST['p'];
+    	}
+
+
+        function get_page2_scrolling ($n_group,$p,$n_pages)
+        {
+    		$base_url ='/wp-admin/admin.php?page=committee';
+    		$scroll='';
+            if ($n_pages > 1)
+    	      {
+    			if ($p >= 1)
+    			{
+    				$scroll ='<div id="prev_btn" style="float:left;"><a style="padding-right:30px;" href="'.$base_url.'&p='.($p - 49).'">Previous</a></div>';
+    			}
+    		if ($p < ($n_pages - 1)) 
+                {
+    			    $scroll .= '<div id="next_btn" style="float:right;margin-right: 21px;"><a style="padding-right:43px;" href="'.$base_url.'&p='.($p + 49).'">Next</a></div>';
+    		    }
+
+    		if (trim($scroll) != "1")
+    			{
+    				return $scroll;
+    			}
+            }
+    	  return $scroll;
+        }//function get_page2_scrolling ends
+    	
+        $scrolling2 = get_page2_scrolling($n_group,$p,$n_pages);
+    	echo "<h2>Committee</h2>";
+    	echo "<div class='l-pagination'>".$scrolling2."</div>";
+    	$ws_details = $wpdb->get_results("SELECT * FROM `wp_committee`  LIMIT $p , $n_x_group");
+    	//print_r($ws_details);
+        echo "<div style='width:1138px;max-height:800px;overflow-x: auto;overflow-y:auto;'>";
+        echo "<table class='loc-table'style='empty-cells:show;'>";
+    	echo "<th>ID</th>";
+    	echo "<th>User</th>";
+    	echo "<th>Centre</th>";
+    	echo "<th>Member Type</th>";
+    	echo "<th>Name</th>";
+    	echo "<th>Phone</th>";
+    	echo "<th>Email</th>";
+    	echo "<th></th>";
+    	echo "<th></th>";
+
+    	foreach ($ws_details as $data) 
+        {
+    		$i++;
+    		echo "<tr>";
+    		echo "<td>".$i."</td>";
+    		echo "<td>".$data->user."</td>";
+    		echo "<td>".$data->center."</td>";
+    		echo "<td>".$data->member_type."</td>";
+    		echo "<td>".$data->name."</td>";
+    		echo "<td>".$data->phone."</td>";
+    		echo "<td>".$data->email."</td>";
+    		echo "<td>".$data->address3."</td>";
+    		echo "<td><a href='/wp-admin/admin.php?page=committee&update-committee=".$data->id."'>Edit</a></td>";
+    		echo "<td><a href='/wp-admin/admin.php?page=committee&delete-committee=".$data->id."'>Delete</a></td>";
+    		echo "</tr>";
+        }
+    	echo "</table>";
+        echo "</div>"; 
+    }//function display committee ends
+
+    /*editing and deleting regions */
+    function display_region() 
+    {
+          
+        global $wpdb;
+        echo "<h2>Region</h2>";
+        if($_GET['delete-region']) 
+        {
+
+            $cd = $_GET['delete-region'];
+
+            $wpdb->query(
+                $wpdb->prepare(
+                        "
+                         DELETE FROM wp_region
+                            WHERE id = %d
+                        ",
+                        $cd
+                )
+            );
+           echo "Record Deleted for ID ".$cd;
+        }
+        if ($_GET['update-region']) 
+        {
+            $wid = $_GET['update-region'];
+            echo "Update Region";
+            $ws = $wpdb->get_results("SELECT * FROM `wp_region` WHERE `id` = $wid");
+            //print_r($ws);
+
+            $uregion ='';
+            $uregion .="<form method='post' action=''>";
+            $uregion .= "<div class='l-left'>Region:</div>";
+            $uregion .= "<div class='l-right'>";
+            $uregion .= "<input type='text' name='uregion-name' value='".$ws[0]->region."' />";
+            $uregion .= "</div>";
+            $uregion .="<input type='hidden' name='update-region' id='update-region' value='region' />";
+            $uregion .="<input type='submit' value='Update Region' />";
+
+            $uregion .="</form>";
+
+            echo "<div id='u-region' style='width:800px;'>".$uregion."</div>";
+
+            if($_POST['update-region'])     
+            {
+                $uid = $_GET['update-region'];
+                $uregion_name = $_POST['uregion-name'];
+                $wpdb->update(
+                        'wp_region',
+                        array(
+                            'region' => $uregion_name,
+                        ),
+                        array( 'ID' => $uid ),
+                        array(
+                            '%s',
+                        ),
+                        array( '%d' )
+                 );
+            }
+        }
+        //pagination
+        $num_region = $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_region`");
+        $n_group = $num_region[0]->total_nr;
+        $n_x_group = 49;
+        $n_pages = (($n_group / $n_x_group) < 1 ? 1 : ($n_group / $n_x_group));
+        $p=0;
+
+        if( isset($_REQUEST['p'])) 
+        {
+                $p=$_REQUEST['p'];
+        }
+
+        $ws_details = $wpdb->get_results("SELECT * FROM `wp_region` LIMIT $p , $n_x_group");
+
+        echo "<table class='loc-table'>";
+        echo "<th>ID</th>";
+        echo "<th>Region</th>";
+        echo "<th></th>";
+        echo "<th></th>";
+
+        foreach ($ws_details as $data) 
+        {
+            $i++;
+            echo "<tr>";
+            echo "<td>".$i."</td>";
+            echo "<td>".$data->region."</td>";
+            echo "<td><a href='/wp-admin/admin.php?page=region&update-region=".$data->id."'>Edit</a></td>";
+            echo "<td><a href='/wp-admin/admin.php?page=region&delete-region=".$data->id."'>Delete</a></td>";
+            echo "</tr>";
+
+        }
+        echo "</table>";
+    }//function display region ends
+
+    /*editing and deleting CORD*/
+    function display_chord() 
+    {
+
+        global $wpdb;
+
+        if($_GET['delete-chord']) 
+        {
+            $ad = $_GET['delete-chord'];
+            $wpdb->query(
+                   $wpdb->prepare(
+                                "
+                                    DELETE FROM wp_location
+                                    WHERE id = %d
+                                ",
+                                $ad
+                                )
+                );
+            echo "Record Deleted for ID ".$ad;
+        }
+
+        if ($_GET['update-chord']) 
+        {
+
+            $aid = $_GET['update-chord'];
+            echo "Update Chord";
+            $wa = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `id` = $aid AND `location_type` LIKE 'chord'");
+
+            $uchord ='';
+            $uchord .="<form method='post' action=''>";
+
+            $uchord .= "<div class='l-left'>Name:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-name' value='".$wa[0]->name."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Location:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-location' value='".$wa[0]->location."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Address 1:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-address1' value='".$wa[0]->address1."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Address 2:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-address2' value='".$wa[0]->address2."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Postal Code:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-address3' value='".$wa[0]->address3."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Country:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-country' value='".$wa[0]->country."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>State:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-state' value='".$wa[0]->state."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>City:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-city' value='".$wa[0]->city."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Continent:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-continent' value='".$wa[0]->continent."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Location Incharge:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-location_incharge' value='".$wa[0]->location_incharge."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Phone:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-phone' value='".$wa[0]->phone."' />";
+            $uchord .= "</div>";
+
+            $uchord .= "<div class='l-left'>Email:</div>";
+            $uchord .= "<div class='l-right'>";
+            $uchord .= "<input type='text' name='uchord-email' value='".$wa[0]->email."' />";
+            $uchord .= "</div>";
+
+
+
+            $uchord .="<input type='hidden' name='update-chord' id='update-chord' value='chord' />";
+            $uchord .="<input type='submit' value='Update Chord' />";
+
+            $uchord .="</form>";
+
+            echo "<div id='u-chord' style='width:800px;'>".$uchord."</div>";
+
+            if($_POST['update-chord'])     
+            {
+                $cid = $_GET['update-chord'];
+                $clocation = $_POST['uchord-location'];
+                $cname = $_POST['uchord-name'];
+                $cadd1 = $_POST['uchord-address1'];
+                $cadd2 = $_POST['uchord-address2'];
+                $cadd3 = $_POST['uchord-address3'];
+                $ccountry = $_POST['uchord-country'];
+                $cstate = $_POST['uchord-state'];
+                $ccity = $_POST['uchord-city'];
+                $ccon = $_POST['uchord-continent'];
+                $clocation_incharge = $_POST['uchord-location_incharge'];
+                $cphone = $_POST['uchord-phone'];
+                $cemail = $_POST['uchord-email'];
+                $wpdb->update(
+                        'wp_location',
+                        array(
+                        'location' => $clocation,
+                        'name' => $cname,
+                        'address1' => $cadd1,
+                        'address2' => $cadd2,
+                        'address3' => $cadd3,
+                        'city' => $ccity,
+                        'state' => $cstate,
+                        'country' => $ccountry,
+                        'continent' => $ccon,
+                        'location_incharge' => $clocation_incharge,
+                        'phone' => $cphone,
+                        'email' => $cemail,
+                         ),
+                        array( 'ID' => $aid ),
+                        array(
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                        ),
+                        array( '%d' )
+                    );
+            }
+    }//function display_chord ends
+
+
+    //paginating the contents
+    $num_chord = $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_location` WHERE `location_type` LIKE 'chord '  ");
+    $n_group = $num_chord[0]->total_nr;
+    $n_x_group = 49;
+    $n_pages = (($n_group / $n_x_group) < 1 ? 1 : ($n_group / $n_x_group));
+    $p=0;
+
+    if( isset($_REQUEST['p'])) 
+    {
+        $p=$_REQUEST['p'];
+    }
+
+    function get_page2_scrolling ($n_group,$p,$n_pages)
+    {
+        $base_url ='/wp-admin/admin.php?page=chord ';
+        $scroll='';
+
+        if ($n_pages > 1)
+        {
+        if ($p >= 1)
+        {
+        $scroll ='<div id="prev_btn" style="float:left;"><a style="padding-right:30px;" href="'.$base_url.'&p='.($p - 49).'">Previous</a></div>';
+        }
+        if ($p < ($n_pages - 1)) {
+        $scroll .= '<div id="next_btn" style="float:right;margin-right: 21px;"><a style="padding-right:43px;" href="'.$base_url.'&p='.($p + 49).'">Next</a></div>';
+        }
+
+        if (trim($scroll) != "1")
+        {
+        return $scroll;
+        }
+        }
+        return $scroll;
+        }
+        $scrolling2 = get_page2_scrolling($n_group,$p,$n_pages);
+
+        echo "<h2>Chord </h2>";
+        echo "<div class='l-pagination'>".$scrolling2."</div>";
+
+        $ws_details = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `location_type` LIKE 'chord' LIMIT $p , $n_x_group");
+
+        echo "<div style='width:1138px;max-height:800px;overflow-x: auto;overflow-y:auto;'>";
+        echo "<table class='loc-table'style='empty-cells:show;'>";
+        echo "<th>ID</th>";
+        echo "<th>Name</th>";
+        echo "<th>Location</th>";
+        echo "<th>Adress 1</th>";
+        echo "<th>Address 2</th>";
+        echo "<th>Postal Code</th>";
+        echo "<th>City</th>";
+        echo "<th>State</th>";
+        echo "<th>Country</th>";
+        echo "<th>Continent</th>";
+        echo "<th>Location Incharge</th>";
+        echo "<th>Phone</th>";
+        echo "<th>Email</th>";
+        echo "<th></th>";
+        echo "<th></th>";
+
+        foreach ($ws_details as $data) 
+        {
+            $i++;
+            echo "<tr>";
+            echo "<td>".$i."</td>";
+            echo "<td>".$data->name."</td>";
+            echo "<td>".$data->location."</td>";
+            echo "<td>".$data->address1."</td>";
+            echo "<td>".$data->address2."</td>";
+            echo "<td>".$data->address3."</td>";
+            echo "<td>".$data->city."</td>";
+            echo "<td>".$data->state."</td>";
+            echo "<td>".$data->country."</td>";
+            echo "<td>".$data->continent."</td>";
+            echo "<td>".$data->location_incharge."</td>";
+            echo "<td>".$data->phone."</td>";
+            echo "<td>".$data->email."</td>";
+            echo "<td><a href='/wp-admin/admin.php?page=chord&update-chord=".$data->id."'>Edit</a></td>";
+            echo "<td><a href='/wp-admin/admin.php?page=chord&delete-chord=".$data->id."'>Delete</a></td>";
+            echo "</tr>";
+
+        }
+        echo "</table>";
+        echo "</div>";
+    }//function get_page2_scrolling ends
+
+    function display_trust() 
+    {
+
+            global $wpdb;
+
+            if($_GET['delete-trust']) {
+
+            $ad = $_GET['delete-trust'];
+
+            $wpdb->query(
+                    $wpdb->prepare(
+                            "
+                            DELETE FROM wp_location
+                            WHERE id = %d
+                            ",
+                            $ad
+                    )
+            );
+
+            echo "Record Deleted for ID ".$ad;
+
+            }
+
+            if ($_GET['update-trust']) {
+
+                    $aid = $_GET['update-trust'];
+                    echo "Update Trust";
+                    $wa = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `id` = $aid AND `location_type` LIKE 'trust'");
+
+            $utrust ='';
+            $utrust .="<form method='post' action=''>";
+
+            $utrust .= "<div class='l-left'>Name:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-name' value='".$wa[0]->name."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Email:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-email' value='".$wa[0]->email."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Phone:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-phone' value='".$wa[0]->phone."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Fax:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-fax' value='".$wa[0]->fax."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Description:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<textarea name='utrust-description' rows='10' cols='20'>".$wa[0]->description."</textarea>";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Activities:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-activities' value='".$wa[0]->activities."'/>";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Url:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-url' value='".$wa[0]->url."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Address 1:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-address1' value='".$wa[0]->address1."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Address 2:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-address2' value='".$wa[0]->address2."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Address 3:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-address3' value='".$wa[0]->address3."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Country:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-country' value='".$wa[0]->country."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>State:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-state' value='".$wa[0]->state."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>City:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-city' value='".$wa[0]->city."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Pincode:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-zip' value='".$wa[0]->zip."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Continent:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-continent' value='".$wa[0]->continent."' />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Latitude:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-latitude' value='".$wa[0]->latitude."'  />";
+            $utrust .= "</div>";
+
+            $utrust .= "<div class='l-left'>Longitude:</div>";
+            $utrust .= "<div class='l-right'>";
+            $utrust .= "<input type='text' name='utrust-longitude' value='".$wa[0]->longitude."' />";
+            $utrust .= "</div>";
+
+            $utrust .="<input type='hidden' name='update-trust' id='update-trust' value='trust' />";
+            $utrust .="<input type='submit' value='Update Trust' />";
+
+            $utrust .="</form>";
+
+            echo "<div id='u-trust' style='width:800px;'>".$utrust."</div>";
+
+                    if($_POST['update-trust'])     {
+                            $aid = $_GET['update-trust'];
+                            $aname = $_POST['utrust-name'];
+                            $aemail = $_POST['utrust-email'];
+                            $aphone = $_POST['utrust-phone'];
+                            $afax = $_POST['utrust-fax'];
+                            $adesc = $_POST['utrust-description'];
+                            $aurl = $_POST['utrust-url'];
+                            $aadd1 = $_POST['utrust-address1'];
+                            $aadd2 = $_POST['utrust-address2'];
+                            $aadd3 = $_POST['utrust-address3'];
+                            $acountry = $_POST['utrust-country'];
+                            $azip = $_POST['utrust-zip'];
+                            $astate = $_POST['utrust-state'];
+                            $acity = $_POST['utrust-city'];
+                            $acon = $_POST['utrust-continent'];
+                            $alat = $_POST['utrust-latitude'];
+                            $along = $_POST['utrust-longitude'];
+                            $a_up = date('Y-m-d H:i:s');
+                            $aact = $_POST['utrust-activities'];
+            $wpdb->update(
+            'wp_location',
+            array(
+                    'name' => $aname,       // string
+                    'email' => $aemail,
+                    'phone' => $aphone,
+                    'fax' => $afax,
+                    'description' => $adesc,
+                    'url' => $aurl,
+                    'address1' => $aadd1,
+                    'address2' => $aadd2,
+                    'address3' => $aadd3,
+                    'city' => $acity,
+                    'state' => $astate,
+                    'country' => $acountry,
+                    'zip' => $azip,
+                    'continent' => $acon,
+                    'latitude' => $alat,
+                    'longitude' => $along,
+                    'updated_on' => $a_up,
+                    'activities' => $aact
+            ),
+            array( 'ID' => $aid ),
+            array(
+                    '%s',
+    		'%s',
+    		'%s',
+    		'%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%f',
+                    '%f',
+                    '%s',
+                    '%s'
+
+            ),
+            array( '%d' )
+            );
+
+                    }
+
+            }
+
+            //pagination
+            $num_trust = $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_location` WHERE `location_type` LIKE 'trust'  ");
+            $n_group = $num_trust[0]->total_nr;
+            $n_x_group = 49;
+            $n_pages = (($n_group / $n_x_group) < 1 ? 1 : ($n_group / $n_x_group));
+            $p=0;
+
+            if( isset($_REQUEST['p'])) {
+                    $p=$_REQUEST['p'];
+            }
+
+            function get_page2_scrolling ($n_group,$p,$n_pages)
+            {
+                    $base_url ='/wp-admin/admin.php?page=trust';
+                    $scroll='';
+
+                    if ($n_pages > 1)
+                    {
+                            if ($p >= 1)
+                            {
+                                    $scroll ='<div id="prev_btn" style="float:left;"><a style="padding-right:30px;" href="'.$base_url.'&p='.($p - 49).'">Previous</a></div>';
+                            }
+                            if ($p < ($n_pages - 1)) {
+                                    $scroll .= '<div id="next_btn" style="float:right;margin-right: 21px;"><a style="padding-right:43px;" href="'.$base_url.'&p='.($p + 49).'">Next</a></div>';
+                            }
+
+                            if (trim($scroll) != "1")
+                            {
+                                    return $scroll;
+                            }
+                    }
+                    return $scroll;
+            }
+            $scrolling2 = get_page2_scrolling($n_group,$p,$n_pages);
+
+
+
+            echo "<h2>Trust</h2>";
+
+
+            echo "<div class='l-pagination'>".$scrolling2."</div>";
+
+            $ws_details = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `location_type` LIKE 'trust' LIMIT $p , $n_x_group");
+            //print_r($ws_details);
+
+            echo "<div style='width:1138px;max-height:800px;overflow-x: auto;overflow-y:auto;'>";
+            echo "<table class='loc-table'style='empty-cells:show;'>";
+                    echo "<th>ID</th>";
+    		        echo "<th>Location ID</th>";
+                    echo "<th>Name</th>";
+                    echo "<th>Email</th>";
+                    echo "<th>Phone</th>";
+                    echo "<th>Fax</th>";
+                    echo "<th>Decription</th>";
+                    echo "<th>Url</th>";
+                    echo "<th>Activities</th>";
+                    echo "<th>Adress 1</th>";
+                    echo "<th>Address 2</th>";
+                    echo "<th>Address 3</th>";
+                    echo "<th>City</th>";
+                    echo "<th>State</th>";
+                    echo "<th>Country</th>";
+                    echo "<th>Pincode</th>";
+                    echo "<th>Continent</th>";
+                    echo "<th>Latitude</th>";
+                    echo "<th>Longitude</th>";
+                    echo "<th>Added On</th>";
+                    echo "<th>Updated On</th>";
+                    echo "<th></th>";
+                    echo "<th></th>";
+
+                    foreach ($ws_details as $data) {
+                            $i++;
+                            echo "<tr>";
+                            echo "<td>".$i."</td>";
+                            echo "<td>".$data->id."</td>";
+                            echo "<td>".$data->name."</td>";
+                            echo "<td>".$data->email."</td>";
+                            echo "<td>".$data->phone."</td>";
+                            echo "<td>".$data->fax."</td>";
+                            echo "<td>".$data->description."</td>";
+                            echo "<td>".$data->url."</td>";
+                            echo "<td>".$data->activities."</td>";
+                            echo "<td>".$data->address1."</td>";
+                            echo "<td>".$data->address2."</td>";
+                            echo "<td>".$data->address3."</td>";
+                            echo "<td>".$data->city."</td>";
+                            echo "<td>".$data->state."</td>";
+                            echo "<td>".$data->country."</td>";
+                            echo "<td>".$data->zip."</td>";
+                            echo "<td>".$data->continent."</td>";
+                            echo "<td>".$data->latitude."</td>";
+                            echo "<td>".$data->longitude."</td>";
+                            echo "<td>".$data->added_on."</td>";
+                            echo "<td>".$data->updated_on."</td>";
+                            echo "<td><a href='/wp-admin/admin.php?page=trust&update-trust=".$data->id."'>Edit</a></td>";
+                            echo "<td><a href='/wp-admin/admin.php?page=trust&delete-trust=".$data->id."'>Delete</a></td>";
+                            echo "</tr>";
+
+                    }
+            echo "</table>";
+            echo "</div>";
+    }//function display_trust ends
+
+    function display_center() {
+
+        global $wpdb;
+
+        echo "<h2>Center</h2>";
+
+    	if($_GET['delete-center']) {
+
+    	$cd = $_GET['delete-center'];
+
+    	$wpdb->query(
+    		$wpdb->prepare(
+    			"
+    	                DELETE FROM wp_location
+    			WHERE id = %d
+    			",
+    		        $cd
+            	)
+    	);
+
+    	echo "Record Deleted for ID ".$cd;
+
+    	}
+
+
+    	if ($_GET['update']) {
+    	$wid = $_GET['update'];
+
+          echo "Update Center";
+
+          $ws = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `id` = ".$wid." AND `location_type` LIKE 'centre'");
+
+
+        	$ucenter ='';
+        	$ucenter .="<form method='post' action=''>";
+            $ucenter .= "<div class='l-left'>Name:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-name' value='".$ws[0]->name."' />";
+            $ucenter .= "</div>";
+
+    	    $ucenter .= "<div class='l-left'>Trust:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-trust' value='".$ws[0]->trust."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Description:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<textarea name='ucenter-description' rows='10' cols='20'>".$ws[0]->description."</textarea>";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Url:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-url' value='".$ws[0]->url."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Phone:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-phone' value='".$ws[0]->phone."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Fax:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-fax' value='".$ws[0]->fax."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Email:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-email' value='".$ws[0]->email."' />";
+            $ucenter .= "</div>";
+
+    	    $ucenter .= "<div class='l-left'>Acharya:</div>";
+            $ucenter .= "<div class='l-right'>";
+
+            $ucenter .= "<select name = 'ucenter-acharya'>";
+            $ucenter .= "<option value=''>Select Acharya Here</option>";
+
+             foreach($wpdb->get_results("SELECT id,profile_id,salutation,last_name FROM `wp_acharya` ORDER BY salutation,last_name ASC") as $key => $row){
+               $ucenter .= "<option value=" . $row->profile_id . ">" . $row->salutation . " " . $row->last_name . "</option>";
+             }
+            $ucenter .= "</select>";
+            $ucenter .= "</div>";
+            
+            $ucenter .= "<div class='l-left'>President:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-president' value='".$ws[0]->president."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Secretary:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-secretary' value='".$ws[0]->secretary."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Treasurer:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-treasurer' value='".$ws[0]->treasurer."' />";
+            $ucenter .= "</div>";
+
+    	    $ucenter .= "<div class='l-left'>address 1:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<textarea name='ucenter-address1' rows='10' cols='20'>".$ws[0]->address1."</textarea>";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Address 2:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<textarea name='ucenter-address2' rows='10' cols='20'>".$ws[0]->address2."</textarea>";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Address 3:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<textarea name='ucenter-address3' rows='10' cols='20'>".$ws[0]->address3."</textarea>";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Country:</div>";
+            $ucenter .= "<div class='l-right'>";
+    	    $ucenter .= "<input type='text' name='ucenter-country' value='".$ws[0]->country."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>State:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-state' value='".$ws[0]->state."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>City:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-city' value='".$ws[0]->city."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Pincode:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-zip' value='".$ws[0]->zip."' />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Continent:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-continent'value='".$ws[0]->continent."' >";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Latitude:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-latitude' value='".$ws[0]->latitude."'  />";
+            $ucenter .= "</div>";
+
+            $ucenter .= "<div class='l-left'>Longitude:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-longitude' value='".$ws[0]->longitude."' />";
+            $ucenter .= "</div>";
+            $ucenter .= "<div class='l-left'>Contact:</div>";
+            $ucenter .= "<div class='l-right'>";
+            $ucenter .= "<input type='text' name='ucenter-contact' value='".$ws[0]->contact."'/>";
+            $ucenter .= "</div>";
+
+            $ucenter .="<input type='hidden' name='update-center' id='update-center' value='center' />";
+            $ucenter .="<input type='submit' value='Update Center' />";
+
+    	    $ucenter .="</form>";
+
+    	    echo "<div id='u-center' style='width:800px;'>".$ucenter."</div>";
+
+    		if($_POST['update-center'])	{
+    			$uid = $_GET['update'];
+    			$uname = $_POST['ucenter-name'];
+    			$utrust = $_POST['ucenter-trust'];
+    			$udesc = $_POST['ucenter-description'];
+    			$uurl = $_POST['ucenter-url'];
+    			$uphone = $_POST['ucenter-phone'];
+    			$ufax = $_POST['ucenter-fax'];
+    			$uemail = $_POST['ucenter-email'];
+    			$uacharya = $_POST['ucenter-acharya'];
+    			$upresident = $_POST['ucenter-president'];
+    			$usecretary = $_POST['ucenter-secretary'];
+    			$utreasurer = $_POST['ucenter-treasurer'];
+                $uadd1 = $_POST['ucenter-address1'];
+                $uadd2 = $_POST['ucenter-address2'];
+    			$uadd3 = $_POST['ucenter-address3'];
+    			$ucountry = $_POST['ucenter-country'];
+    			$ustate = $_POST['ucenter-state'];
+                $ucity = $_POST['ucenter-city'];
+    			$uzip = $_POST['ucenter-zip'];
+    			$ucont = $_POST['ucenter-continent'];
+    			$ulat = $_POST['ucenter-latitude'];
+    			$ulong = $_POST['ucenter-longitude'];
+    			$u_up = date('Y-m-d H:i:s');
+    			$ucon = $_POST['ucenter-contact'];
+                print_r($uid);
+    	$wpdb->update(
+    	   'wp_location',
+    	   array(
+        		'name' => $uname,
+        		'trust' => $utrust,
+        		'description' => $udesc,
+        		'url' => $uurl,
+        		'phone' => $uphone,
+        		'fax' => $ufax,
+        		'email' => $uemail,
+        		'acharya' => $uacharya,
+        		'president' => $upresident,
+        		'secretary' => $usecretary,
+        		'treasurer' => $utreasurer,
+                'address1' => $uadd1,
+                'address2' => $uadd2,
+        		'address3' => $uadd3,
+        		'city' => $ucity,
+        		'state' => $ustate,
+                'country' => $ucountry,
+        		'zip' => $uzip,
+        		'continent' => $ucont,
+        		'latitude' => $ulat,
+        		'longitude' => $ulong,
+        		'updated_on' => $u_up,
+        		'contact' => $ucon,
+        	),
+        	array( 'ID' => $uid ),
+        	array(
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+                '%s',
+        		'%s',
+                '%s',
+                '%s',
+        		'%s',
+                '%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        	    '%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        		'%s',
+        	),
+        	array( '%d' )
+    	);
+
+    		}
+
+    	}
+
+
+    	//pagination
+    	$num_center = $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_location` WHERE `location_type` LIKE 'centre'");
+    	//$num_center = 4;
+    	$n_center = $num_center[0]->total_nr;
+    	$n_x_center = 49;
+    	$n_centers = (($n_center / $n_x_center) < 1 ? 1 : ($n_center / $n_x_center));
+    	$pcenter=0;
+
+    	if( isset($_REQUEST['pcenter'])) {
+    		$pcenter=$_REQUEST['pcenter'];
+    	}
+
+    	function get_page1_scrolling ($n_center,$pcenter,$n_centers)
+    	{
+    		$base_url ='/wp-admin/admin.php?page=center';
+    		$scroll1 ='';
+
+    		if ($n_centers > 1)
+    		{
+    			if ($pcenter >= 1)
+    			{
+    				$scroll1 ='<div id="prev_btn" style="float:left;"><a style="padding-right:30px;" href="'.$base_url.'&pcenter='.($pcenter - 49).'">Previous</a></div>';
+    			}
+    			if ($pcenter < ($n_centers - 1)) {
+    				$scroll1 .= '<div id="next_btn" style="float:right;margin-right: 21px;"><a style="padding-right:43px;" href="'.$base_url.'&pcenter='.($pcenter + 49).'">Next</a></div>';
+    			}
+
+    			if (trim($scroll1) != "1")
+    			{
+    				return $scroll1;
+    			}
+    		}
+    		return $scroll1;
+    	}
+    	$scrolling = get_page1_scrolling($n_center,$pcenter,$n_centers);
+
+    	echo "<div class='l-pagination'>".$scrolling."</div>";
+
+    	$ws_details = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `location_type` LIKE 'centre' ORDER BY `id` DESC ");
+
+        echo "<div style='width:1138px;max-height:800px;overflow-x: auto;overflow-y:auto;'>";
+        echo "<table class='loc-table'style='empty-cells:show;'>";
+    		echo "<th>ID</th>";
+    		echo "<th>Location ID</th>";
+    		echo "<th>Name</th>";
+    		echo "<th>Trust</th>";
+    		echo "<th>Decription</th>";
+    		echo "<th>Url</th>";
+    		echo "<th>Phone</th>";
+    		echo "<th>Fax</th>";
+    		echo "<th>Email</th>";
+    		echo "<th>Acharya</th>";
+    		echo "<th>President</th>";
+    		echo "<th>Secretary</th>";
+    		echo "<th>Treasurer</th>";
+            echo "<th>Adress 1</th>";
+            echo "<th>Adress 2</th>";
+    		echo "<th>Adress 3</th>";
+    		echo "<th>City</th>";
+            echo "<th>State</th>";
+            echo "<th>Country</th>";
+    		echo "<th>Pincode</th>";
+    		echo "<th>Continent</th>";
+    		echo "<th>Latitude</th>";
+    		echo "<th>Longitude</th>";
+    		echo "<th>Added On</th>";
+    		echo "<th>Updated On</th>";
+    		echo "<th>Contact</th>";
+    		echo "<th></th>";
+    		echo "<th></th>";
+
+    		foreach ($ws_details as $data) {
+              $ws_details = $wpdb->get_row("SELECT salutation,last_name FROM `wp_acharya` WHERE profile_id =" . $data->acharya );
+              $i++;
+    			echo "<tr>";
+    			echo "<td>".$i."</td>";
+    			echo "<td>".$data->id."</td>";
+    			echo "<td>".$data->name."</td>";
+    			echo "<td>".$data->trust."</td>";
+    			echo "<td>".$data->description."</td>";
+    			echo "<td>".$data->url."</td>";
+    			echo "<td>".$data->phone."</td>";
+    			echo "<td>".$data->fax."</td>";
+    			echo "<td>".$data->email."</td>";
+    			echo "<td>".$ws_details->salutation." ".$ws_details->last_name."</td>";
+    			echo "<td>".$data->president."</td>";
+    			echo "<td>".$data->secretary."</td>";
+    			echo "<td>".$data->treasurer."</td>";
+                echo "<td>".$data->address1."</td>";
+                echo "<td>".$data->address2."</td>";
+    			echo "<td>".$data->address3."</td>";
+    			echo "<td>".$data->city."</td>";
+    			echo "<td>".$data->state."</td>";
+                echo "<td>".$data->country."</td>";
+    			echo "<td>".$data->zip."</td>";
+    			echo "<td>".$data->continent."</td>";
+    			echo "<td>".$data->latitude."</td>";
+    			echo "<td>".$data->longitude."</td>";
+    			echo "<td>".$data->added_on."</td>";
+    			echo "<td>".$data->updated_on."</td>";
+    			echo "<td>".$data->contact."</td>";
+    			echo "<td><a href='/wp-admin/admin.php?page=center&update=".$data->id."'>Edit</a></td>";
+    			echo "<td><a href='/wp-admin/admin.php?page=center&delete-center=".$data->id."'>Delete</a></td>";
+    			echo "</tr>";
+
+    		}
+    	echo "</table>";
+        echo "</div>";
+    }//function display center ends
+
+    function display_ashram() {
+
+    	global $wpdb;
+
+    	if($_GET['delete-ashram']) {
+
+            $ad = $_GET['delete-ashram'];
+
+            $wpdb->query(
+                    $wpdb->prepare(
+                            "
+                            DELETE FROM wp_location
+                            WHERE id = %d
+                            ",
+                            $ad
+                    )
+            );
+
+            echo "Record Deleted for ID ".$ad;
+
+            }
+
+    	if ($_GET['update-ashram']) {
+
+    		$aid = $_GET['update-ashram'];
+                    echo "Update Ashram";
+                    $wa = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `id` = $aid AND `location_type` LIKE 'ashram'");
+
+    	$uashram ='';
+            $uashram .="<form method='post' action=''>";
+
+    	$uashram .= "<div class='l-left'>Name:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-name' value='".$wa[0]->name."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Acharya:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-acharya' value='".$wa[0]->acharya."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Phone:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-phone' value='".$wa[0]->phone."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Email:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-email' value='".$wa[0]->email."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Fax:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-fax' value='".$wa[0]->fax."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Description:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<textarea name='uashram-description' rows='10' cols='20'>".$wa[0]->description."</textarea>";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Activities:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-activities' value='".$wa[0]->activities."'/>";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Url:</div>";
+            $uashram .= "<div class='l-right'>";
+     	    $uashram .= "<input type='text' name='uashram-url' value='".$wa[0]->url."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Address 1:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<textarea name='uashram-address1' rows='10' cols='20'>".$wa[0]->address1."</textarea>";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Address 2:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<textarea name='uashram-address2' rows='10' cols='20'>".$wa[0]->address2."</textarea>";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Address 3:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<textarea name='uashram-address3' rows='10' cols='20'>".$wa[0]->address3."</textarea>";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Country:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-country' value='".$wa[0]->country."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>State:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-state' value='".$wa[0]->state."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>City:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-city' value='".$wa[0]->city."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Pincode:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-zip' value='".$wa[0]->zip."' />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Continent:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-continent' value='".$wa[0]->continent."' />";
+            $uashram .= "</div>";
+
+    	    $uashram .= "<div class='l-left'>Latitude:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-latitude' value='".$wa[0]->latitude."'  />";
+            $uashram .= "</div>";
+
+            $uashram .= "<div class='l-left'>Longitude:</div>";
+            $uashram .= "<div class='l-right'>";
+            $uashram .= "<input type='text' name='uashram-longitude' value='".$wa[0]->longitude."' />";
+            $uashram .= "</div>";
+
+            $uashram .="<input type='hidden' name='update-ashram' id='update-ashram' value='ashram' />";
+            $uashram .="<input type='submit' value='Update ashram' />";
+
+            $uashram .="</form>";
+
+            echo "<div id='u-ashram' style='width:800px;'>".$uashram."</div>";
+
+                    if($_POST['update-ashram'])     {
+                            $aid = $_GET['update-ashram'];
+                            $aname = $_POST['uashram-name'];
+                            $aacharya = $_POST['uashram-acharya'];
+                            $aphone = $_POST['uashram-phone'];
+                            $aemail = $_POST['uashram-email'];
+                            $afax = $_POST['uashram-fax'];
+                            $adesc = $_POST['uashram-description'];
+                            $aurl = $_POST['uashram-url'];
+                            $aadd1 = $_POST['uashram-address1'];
+                            $aadd2 = $_POST['uashram-address2'];
+                            $aadd3 = $_POST['uashram-address3'];
+                            $acountry = $_POST['uashram-country'];
+                            $astate = $_POST['uashram-state'];
+                            $acity = $_POST['uashram-city'];
+                            $azip = $_POST['uashram-zip'];
+                            $acon = $_POST['uashram-continent'];
+                            $alat = $_POST['uashram-latitude'];
+                            $along = $_POST['uashram-longitude'];
+                            $a_up = date('Y-m-d H:i:s');
+                            $aact = $_POST['uashram-activities'];
+            $wpdb->update(
+            'wp_location',
+            array(
+                    'name' => $aname,       // string
+                    'acharya' => $aacharya,
+                    'phone' => $aphone,
+                    'email' => $aemail,
+                    'fax' => $afax,
+                    'description' => $adesc,
+                    'url' => $aurl,
+                    'address1' => $aadd1,
+                    'address2' => $aadd2,
+                    'address3' => $aadd3,
+                    'city' => $acity,
+                    'state' => $astate,
+                    'country' => $acountry,
+                    'zip' => $azip,
+                    'continent' => $acon,
+                    'latitude' => $alat,
+                    'longitude' => $along,
+                    'updated_on' => $a_up,
+                    'activities' => $aact
+            ),
+            array( 'ID' => $aid ),
+            array(
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%f',
+                    '%f',
+                    '%s',
+                    '%s'
+
+            ),
+            array( '%d' )
+    	);
+
+                    }
+
+    	}
+
+    	//pagination
+    	$num_ashram = $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_location` WHERE `location_type` LIKE 'ashram'  ");
+    	$n_group = $num_ashram[0]->total_nr;
+    	$n_x_group = 49;
+    	$n_pages = (($n_group / $n_x_group) < 1 ? 1 : ($n_group / $n_x_group));
+    	$p=0;
+
+    	if( isset($_REQUEST['p'])) {
+    		$p=$_REQUEST['p'];
+    	}
+
+    	function get_page2_scrolling ($n_group,$p,$n_pages)
+    	{
+    		$base_url ='/wp-admin/admin.php?page=ashram';
+    		$scroll='';
+
+    		if ($n_pages > 1)
+    		{
+    			if ($p >= 1)
+    			{
+    				$scroll ='<div id="prev_btn" style="float:left;"><a style="padding-right:30px;" href="'.$base_url.'&p='.($p - 49).'">Previous</a></div>';
+    			}
+    			if ($p < ($n_pages - 1)) {
+    				$scroll .= '<div id="next_btn" style="float:right;margin-right: 21px;"><a style="padding-right:43px;" href="'.$base_url.'&p='.($p + 49).'">Next</a></div>';
+    			}
+
+    			if (trim($scroll) != "1")
+    			{
+    				return $scroll;
+    			}
+    		}
+    		return $scroll;
+    	}
+    	$scrolling2 = get_page2_scrolling($n_group,$p,$n_pages);
+
+
+
+    	echo "<h2>Ashram</h2>";
+
+
+    	echo "<div class='l-pagination'>".$scrolling2."</div>";
+
+    	$ws_details = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `location_type` LIKE 'ashram' LIMIT $p , $n_x_group");
+    	//print_r($ws_details);
+
+        echo "<div style='width:1138px;max-height:800px;overflow-x: auto;overflow-y:auto;'>";
+        echo "<table class='loc-table'style='empty-cells:show;'>";
+    		echo "<th>ID</th>";
+            echo "<th>Location ID</th>";
+    		echo "<th>Name</th>";
+            echo "<th>Acharya</th>";
+            echo "<th>Phone</th>";
+            echo "<th>Email</th>";
+            echo "<th>Fax</th>";
+    		echo "<th>Decription</th>";
+    		echo "<th>Url</th>";
+    		echo "<th>Activities</th>";
+            echo "<th>Address 1</th>";
+            echo "<th>Address 2</th>";
+    		echo "<th>Address 3</th>";
+    		echo "<th>City</th>";
+    		echo "<th>State</th>";
+            echo "<th>Country</th>";
+    		echo "<th>Pincode</th>";
+    		echo "<th>Continent</th>";
+    		echo "<th>Latitude</th>";
+    		echo "<th>Longitude</th>";
+    		echo "<th>Added On</th>";
+    		echo "<th>Updated On</th>";
+    		echo "<th></th>";
+    		echo "<th></th>";
+
+    		foreach ($ws_details as $data) {
+    			$i++;
+    			echo "<tr>";
+    			echo "<td>".$i."</td>";
+    			echo "<td>".$data->id."</td>";
+    			echo "<td>".$data->name."</td>";
+                echo "<td>".$data->acharya."</td>";
+                echo "<td>".$data->phone."</td>";
+                echo "<td>".$data->email."</td>";
+                echo "<td>".$data->fax."</td>";
+    			echo "<td>".$data->description."</td>";
+    			echo "<td>".$data->url."</td>";
+    			echo "<td>".$data->activities."</td>";
+                echo "<td>".$data->address1."</td>";
+                echo "<td>".$data->address2."</td>";
+    			echo "<td>".$data->address3."</td>";
+    			echo "<td>".$data->city."</td>";
+    			echo "<td>".$data->state."</td>";
+                echo "<td>".$data->country."</td>";
+    			echo "<td>".$data->zip."</td>";
+    			echo "<td>".$data->continent."</td>";
+    			echo "<td>".$data->latitude."</td>";
+    			echo "<td>".$data->longitude."</td>";
+    			echo "<td>".$data->added_on."</td>";
+    			echo "<td>".$data->updated_on."</td>";
+    			echo "<td><a href='/wp-admin/admin.php?page=ashram&update-ashram=".$data->id."'>Edit</a></td>";
+    			echo "<td><a href='/wp-admin/admin.php?page=ashram&delete-ashram=".$data->id."'>Delete</a></td>";
+    			echo "</tr>";
+
+    		}
+    	echo "</table>";
+        echo "</div>";
+
+    }//function display ashram ends
+
+    function display_school() {
+        global $wpdb;
+        echo "<h2>School</h2>";
+
+        if($_GET['delete-school']) {
+
+        $cd = $_GET['delete-school'];
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "
+                        DELETE FROM wp_school
+                WHERE id = %d
+                ",
+                    $cd
+                )
+        );
+
+        echo "Record Deleted for ID ".$cd;
+
+        }
+
+
+        if ($_GET['update']) {
+        $wid = $_GET['update'];
+        echo "Update School";
+        $ws = $wpdb->get_results("SELECT * FROM `wp_school` WHERE `id` = $wid AND `school_type` LIKE 'school'");
+
+        //print_r($ws);
+
+        $uschool ='';
+        $uschool .="<form method='post' action=''>";
+            $uschool .= "<div class='l-left'>Name:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-name' value='".$ws[0]->name."' />";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Description:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<textarea name='uschool-description' rows='10' cols='20'>".$ws[0]->description."</textarea>";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Url:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-url' value='".$ws[0]->url."' />";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Address 1:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<textarea name='uschool-address1' rows='10' cols='20'>".$ws[0]->address1."</textarea>";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Address 2:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<textarea name='uschool-address2' rows='10' cols='20'>".$ws[0]->address2."</textarea>";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Address 3:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<textarea name='uschool-address3' rows='10' cols='20'>".$ws[0]->address3."</textarea>";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Country:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-country' value='".$ws[0]->country."' />";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>State:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-state' value='".$ws[0]->state."' />";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>City:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-city' value='".$ws[0]->city."' />";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Pincode:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-zip' value='".$ws[0]->zip."' />";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Continent:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-continent'value='".$ws[0]->continent."' >";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>Phone:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-phone' value='".$ws[0]->phone."'  />";
+            $uschool .= "</div></br>";
+
+            $uschool .= "<div class='l-left'>email:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-email' value='".$ws[0]->email."' />";
+            $uschool .= "</div></br>";
+            $uschool .= "<div class='l-left'>Affiliation:</div>";
+            $uschool .= "<div class='l-right'>";
+            $uschool .= "<input type='text' name='uschool-affiliation' value='".$ws[0]->affiliation."'/>";
+            $uschool .= "</div></br>";
+
+            $uschool .="<input type='hidden' name='update-school' id='update-school' value='school' />";
+            $uschool .="<input type='submit' value='Update School' />";
+
+        $uschool .="</form>";
+
+        echo "<div id='u-school' style='width:800px;'>".$uschool."</div>";
+
+            if($_POST['update-school']) {
+                $uid = $_GET['update'];
+                $uname = $_POST['uschool-name'];
+                $udesc = $_POST['uschool-description'];
+                $uurl = $_POST['uschool-url'];
+                $uadd1 = $_POST['uschool-address1'];
+                $uadd2 = $_POST['uschool-address2'];
+                $uadd3 = $_POST['uschool-address3'];
+                $uzip = $_POST['uschool-zip'];
+                $ucountry = $_POST['uschool-country'];
+                $ustate = $_POST['uschool-state'];
+                $ucity = $_POST['uschool-city'];
+                $ucont = $_POST['uschool-continent'];
+                $uphone = $_POST['uschool-phone'];
+                $uemail = $_POST['uschool-email'];
+                $uaffiliation = $_POST['uschool-affiliation'];
+                $wpdb->update(
+        'wp_school',
+        array(
+            'name' => $uname,   // string
+            'description' => $udesc,
+            'url' => $uurl,
+            'address1' => $uadd1,
+            'address2' => $uadd2,
+            'address3' => $uadd3,
+            'zip' => $uzip,
+            'city' => $ucity,
+            'state' => $ustate,
+            'country' => $ucountry,
+            'continent' => $ucont,
+            'phone' => $uphone,
+            'email' => $uemail,
+            'affiliation' => $uaffiliation,
+
+            ),
+
+        array( 'ID' => $uid ),
+            array(
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s'
+
+        ),
+        array( '%d' )
+        );
+
+            }
+
+        }
+
+
+        //pagination
+        $num_school = $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_school` WHERE `lschool_type` LIKE 'school'");
+        //$num_school = 4;
+        $n_school = $num_school[0]->total_nr;
+        $n_x_school = 49;
+        $n_school = (($n_school / $n_x_school) < 1 ? 1 : ($n_school / $n_x_school));
+        $pschool=0;
+
+        if( isset($_REQUEST['pschool'])) {
+            $pschool=$_REQUEST['pschool'];
+        }
+
+        function get_page1_scrolling ($n_school,$pschool,$n_school)
+        {
+            $base_url ='/wp-admin/admin.php?page=school';
+            $scroll1 ='';
+
+            if ($n_school> 1)
+            {
+                if ($pschool >= 1)
+                {
+                    $scroll1 ='<div id="prev_btn" style="float:left;"><a style="padding-right:30px;" href="'.$base_url.'&pschool='.($pschool - 49).'">Previous</a></div>';
+                }
+                if ($pschool < ($n_cschool- 1)) {
+                    $scroll1 .= '<div id="next_btn" style="float:right;margin-right: 21px;"><a style="padding-right:43px;" href="'.$base_url.'&pcenter='.($pcenter + 49).'">Next</a></div>';
+                }
+
+                if (trim($scroll1) != "1")
+                {
+                    return $scroll1;
+                }
+            }
+            return $scroll1;
+        }
+        $scrolling = get_page1_scrolling($n_school,$pschool,$n_cschool);
+
+        echo "<div class='l-pagination'>".$scrolling."</div>";
+
+
+
+        $ws_details = $wpdb->get_results("SELECT * FROM `wp_school` WHERE `school_type` LIKE 'school' ");
+        //print_r($ws_details);
+
+        echo "<div style='width:1138px;max-height:800px;overflow-x: auto;overflow-y:auto;'>";
+        echo "<table class='loc-table'style='empty-cells:show;'>";
+            echo "<th>ID</th>";
+            echo "<th>Name</th>";
+            echo "<th>Decription</th>";
+            echo "<th>Url</th>";
+            echo "<th>Adress 1</th>";
+            echo "<th>Address 2</th>";
+            echo "<th>Address 3</th>";
+            echo "<th>City</th>";
+            echo "<th>State</th>";
+            echo "<th>Country</th>";
+            echo "<th>Pincode</th>";
+            echo "<th>Continent</th>";
+            echo "<th>Phone</th>";
+            echo "<th>Email</th>";
+            echo "<th>Affiliation</th>";
+            echo "<th></th>";
+            echo "<th></th>";
+
+            foreach ($ws_details as $data) {
+                $i++;
+                echo "<tr>";
+                echo "<td>".$i."</td>";
+                echo "<td>".$data->name."</td>";
+                echo "<td>".$data->description."</td>";
+                echo "<td>".$data->url."</td>";
+                echo "<td>".$data->address1."</td>";
+                echo "<td>".$data->address2."</td>";
+                echo "<td>".$data->address3."</td>";
+                echo "<td>".$data->city."</td>";
+                echo "<td>".$data->state."</td>";
+                echo "<td>".$data->country."</td>";
+                echo "<td>".$data->zip."</td>";
+                echo "<td>".$data->continent."</td>";
+                echo "<td>".$data->phone."</td>";
+                echo "<td>".$data->email."</td>";
+                echo "<td>".$data->affiliation."</td>";
+                echo "<td><a href='/wp-admin/admin.php?page=school&update=".$data->id."'>Edit</a></td>";
+                echo "<td><a href='/wp-admin/admin.php?page=school&delete-school=".$data->id."'>Delete</a></td>";
+                echo "</tr>";
+
+            }
+        echo "</table>";
+        echo "</div>";
+    }//function display school ends
+
+
+    function display_temple() {
+
+    	global $wpdb;
+
+    	if($_GET['delete-temple']) {
+
+            $td = $_GET['delete-temple'];
+
+            $wpdb->query(
+                    $wpdb->prepare(
+                            "
+                            DELETE FROM wp_location
+                            WHERE id = %d
+                            ",
+                            $td
+                    )
+            );
+
+            echo "Record Deleted for ID ".$td;
+
+            }
+
+
+    	if ($_GET['update-temple']) {
+
+    	echo "Update Temple";
+    	$tid = $_GET['update-temple'];
+    	$wt = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `id` = $tid AND `location_type` LIKE 'temple'");
+
+
+    	$utemple ='';
+            $utemple .="<form method='post' action=''>";
+            $utemple .= "<div class='l-left'>Name:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-name' value='".$wt[0]->name."' />";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>Description:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<textarea name='utemple-description' rows='10' cols='20'>".$wt[0]->description."</textarea>";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>Url:</div>";
+            $utemple .= "<div class='l-right'>";
+     	    $utemple .= "<input type='text' name='utemple-url' value='".$wt[0]->url."' />";
+            $utemple .= "</div>";
+
+    	    $utemple .= "<div class='l-left'>Deity:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-deity' value='".$wt[0]->deity."'  />";
+            $utemple .= "</div>";
+
+    	    $utemple .= "<div class='l-left'>Consecrated On:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-consecrated' value='".$wt[0]->consecrated."' id='datepicker'  />";
+            $utemple .= "</div>";
+
+
+            $utemple .= "<div class='l-left'>Address 1:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<textarea name='utemple-address1' rows='10' cols='20'>".$wt[0]->address1."</textarea>";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>Address 2:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<textarea name='utemple-address2' rows='10' cols='20'>".$wt[0]->address2."</textarea>";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>Address 3:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<textarea name='utemple-address3' rows='10' cols='20'>".$wt[0]->address3."</textarea>";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>Country:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-country' value='".$wt[0]->country."' />";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>State:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-state' value='".$wt[0]->state."' />";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>City:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-city' value='".$wt[0]->city."' />";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>Pincode:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-zip' value='".$wt[0]->zip."' />";
+            $utemple .= "</div>";
+
+    	    $utemple .= "<div class='l-left'>Continent:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-continent' value='".$wt[0]->continent."'  />";
+            $utemple .= "</div>";
+
+    	    $utemple .= "<div class='l-left'>Latitude:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-latitude' value='".$wt[0]->latitude."'  />";
+            $utemple .= "</div>";
+
+            $utemple .= "<div class='l-left'>Longitude:</div>";
+            $utemple .= "<div class='l-right'>";
+            $utemple .= "<input type='text' name='utemple-longitude' value='".$wt[0]->longitude."' />";
+            $utemple .= "</div>";
+
+            $utemple .="<input type='hidden' name='update-temple' id='update-temple' value='temple' />";
+            $utemple .="<input type='submit' value='Update Temple' />";
+
+            $utemple .="</form>";
+
+            echo "<div id='u-temple' style='width:800px;'>".$utemple."</div>";
+
+                    if($_POST['update-temple'])     {
+                            $tid = $_GET['update-temple'];
+                            $uname = $_POST['utemple-name'];
+                            $udesc = $_POST['utemple-description'];
+                            $uurl = $_POST['utemple-url'];
+                            $udeity = $_POST['utemple-deity'];
+                            $ucon = $_POST['utemple-consecrated'];
+                            $uadd1 = $_POST['utemple-address1'];
+                            $uadd2 = $_POST['utemple-address2'];
+                            $uadd3 = $_POST['utemple-address3'];
+                            $ucountry = $_POST['utemple-country'];
+                            $ustate = $_POST['utemple-state'];
+                            $ucity = $_POST['utemple-city'];
+                            $uzip = $_POST['utemple-zip'];
+                            $ucontinent = $_POST['utemple-continent'];
+                            $ulat = $_POST['utemple-latitude'];
+                            $ulong = $_POST['utemple-longitude'];
+                            $u_up = date('Y-m-d H:i:s');
+            $wpdb->update(
+            'wp_location',
+            array(
+                    'name' => $uname,       // string
+                    'description' => $udesc,
+                    'url' => $uurl,
+                    'address1' => $uadd1,
+                    'address2' => $uadd2,
+                    'address3' => $uadd3,
+                    'city' => $ucity,
+                    'state' => $ustate,
+                    'country' => $ucountry,
+                    'zip' => $uzip,
+                    'continent' => $ucontinent,
+                    'latitude' => $ulat,
+                    'longitude' => $ulong,
+                    'deity' => $udeity,
+                    'consecrated' => $ucon,
+                    'updated_on' => $u_up
+            ),
+            array( 'ID' => $tid ),
+            array(
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%f',
+                    '%f',
+                    '%s',
+                    '%s',
+                    '%s'
+
+            ),
+            array( '%d' )
+    	);
+
+                    }
+
+    	}
+
+    	//pagination
+    	$num_temple = $wpdb->get_results("SELECT count(*) as total_nr FROM `wp_location` WHERE `location_type` LIKE 'temple'  ");
+    	$n_group = $num_temple[0]->total_nr;
+    	$n_x_group = 49;
+    	$n_pages = (($n_group / $n_x_group) < 1 ? 1 : ($n_group / $n_x_group));
+    	$p=0;
+
+    	if( isset($_REQUEST['p'])) {
+    		$p=$_REQUEST['p'];
+    	}
+
+    	function get_page3_scrolling ($n_group,$p,$n_pages)
+    	{
+    		$base_url ='/wp-admin/admin.php?page=temple';
+    		$scroll='';
+
+    		if ($n_pages > 1)
+    		{
+    			if ($p >= 1)
+    			{
+    				//$scroll ='<div id="prev_btn" style="float:left;"><a style="padding-right:30px;" href="'.$base_url.'&p='.($p - 49).'">Previous</a></div>';
+    			}
+    			if ($p < ($n_pages - 1)) {
+    				//$scroll .= '<div id="next_btn" style="float:right;margin-right: 21px;"><a style="padding-right:43px;" href="'.$base_url.'&p='.($p + 49).'">Next</a></div>';
+    			}
+
+    			if (trim($scroll) != "1")
+    			{
+    				return $scroll;
+    			}
+    		}
+    		return $scroll;
+    	}
+    	$scrolling3 = get_page3_scrolling($n_group,$p,$n_pages);
+
+
+
+
+    	echo "<h2>Temple</h2>";
+
+    	echo "<div class='l-pagination'>".$scrolling3."</div>";
+
+    	$ws_details = $wpdb->get_results("SELECT * FROM `wp_location` WHERE `location_type` LIKE 'temple'");
+        //print_r($ws_details);
+
+    	echo "<div style='width:1138px;max-height:800px;overflow-x: auto;overflow-y:auto;'>";
+        echo "<table class='loc-table'style='empty-cells:show;'>";
+    		echo "<th>ID</th>";
+            echo "<th>Location ID</th>";
+    		echo "<th>Name</th>";
+    		echo "<th>Decription</th>";
+    		echo "<th>Deity</th>";
+    		echo "<th>Consecrated On</th>";
+    		echo "<th>Url</th>";
+            echo "<th>Adress 1</th>";
+            echo "<th>Adress 2</th>";
+    		echo "<th>Address 3</th>";
+    		echo "<th>City</th>";
+    		echo "<th>State</th>";
+            echo "<th>Country</th>";
+    		echo "<th>Pincode</th>";
+    		echo "<th>Continent</th>";
+    		echo "<th>Latitude</th>";
+    		echo "<th>Longitude</th>";
+    		echo "<th>Added On</th>";
+    		echo "<th>Updated On</th>";
+    		echo "<th></th>";
+    		echo "<th></th>";
+
+    		foreach ($ws_details as $data) {
+    			$i++;
+    			echo "<tr>";
+    			echo "<td>".$i."</td>";
+    			echo "<td>".$data->id."</td>";
+    			echo "<td>".$data->name."</td>";
+    			echo "<td>".$data->description."</td>";
+    			echo "<td>".$data->deity."</td>";
+    			echo "<td>".$data->consecrated."</td>";
+    			echo "<td>".$data->url."</td>";
+                echo "<td>".$data->address1."</td>";
+                echo "<td>".$data->address2."</td>";
+    			echo "<td>".$data->address3."</td>";
+    			echo "<td>".$data->city."</td>";
+    			echo "<td>".$data->state."</td>";
+                echo "<td>".$data->country."</td>";
+    			echo "<td>".$data->zip."</td>";
+    			echo "<td>".$data->continent."</td>";
+    			echo "<td>".$data->latitude."</td>";
+    			echo "<td>".$data->longitude."</td>";
+    			echo "<td>".$data->added_on."</td>";
+    			echo "<td>".$data->updated_on."</td>";
+    			echo "<td><a href='/wp-admin/admin.php?page=temple&update-temple=".$data->id."'>Edit</a></td>";
+    			echo "<td><a href='/wp-admin/admin.php?page=temple&delete-temple=".$data->id."'>Delete</a></td>";
+    			echo "</tr>";
+
+    }//function display temple ends
+
+    echo "</table>";
+    echo "</div>";
+
+?>
+
+
+<script type='text/javascript' src='/wp-content/plugins/wp_location/js/jquery-1.9.1.min.js'></script>
+<script type='text/javascript' src='/wp-content/plugins/wp_location/datepicker/jquery-ui.js'></script>
+<link rel="stylesheet" href="/wp-content/plugins/wp_location/datepicker/jquery-ui.css" />
+<script>
+
+    jQuery(function() {
+        jQuery( "#datepicker" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '-100y:c+nn',
+            dateFormat: 'yy-mm-dd'
+        });
+    });
+
+</script>
+<?php
+
+}
+    /* ashram insert query */
+    if(isset($_POST['submitted-ashram'])) 
+    {
+        $a_name = trim($_POST['ashram-name']);
+        $a_description = trim($_POST['ashram-description']);
+        $a_trust = trim($_POST['ashram-trust']);
+        $a_url = trim($_POST['ashram-url']);
+        $a_phone = trim($_POST['ashram-phone']);
+        $fax = trim($_POST['ashram-fax']);
+        $a_email = trim($_POST['ashram-email']);
+        $a_acharya = trim($_POST['ashram-acharya']);
+        $a_president = trim($_POST['ashram-president']);
+        $a_secretary = trim($_POST['ashram-secretary']);
+        $a_treasurer = trim($_POST['ashram-treasurer']);
+        $a_address1 = trim($_POST['ashram-address1']);
+        $a_country = trim($_POST['ashram-country']);
+        $a_zip = trim($_POST['ashram-zip']);
+        $a_state = trim($_POST['ashram-state']);
+        $a_city = trim($_POST['ashram-city']);
+        $a_continent = trim($_POST['location-continent']);
+        $a_latitude = trim($_POST['ashram-latitude']);
+        $a_longitude = trim($_POST['ashram-longitude']);
+        $a_add_on = date('Y-m-d H:i:s');
+        $a_contact = trim($_POST['ashram-contact']);
+        $a_image = trim($_POST['ashram-image']);
+        $a_type = $_POST['submitted-ashram'];
+
+        $wpdb->insert(
+                    'wp_location',
+                    array(
+                            'id' => '',
+                            'location_type' => $a_type,
+                            'name' => $a_name,
+                            'trust' => $a_trust,
+                            'description' => $a_description,
+                            'url' => $a_url,
+                            'phone' => $a_phone,
+                            'fax' => $a_fax,
+                            'email' => $a_email,
+                            'acharya' => $a_acharya,
+                            'president' => $a_president,
+                            'secretary' => $a_secretary,
+                            'treasurer' => $a_treasurer,
+                            'address1' => $a_address1,
+                            'city' => $a_city,
+                            'state' => $a_state,
+                            'country' => $a_country,
+                            'zip' => $a_zip,
+                            'continent' => $a_continent,
+                            'latitude' => $a_latitude,
+                            'longitude' => $a_longitude,
+                            'added_on' => $a_add_on,
+                            'contact' => $a_contact,
+                        ),
+                    array(
+                            '%d',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                    		'%s',
+                            '%s',
+                    		'%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                        	'%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+            	            '%s',
+                            '%f',
+                            '%f',
+                            '%s',
+                        )
+                    );
+
+        $ashram = true;
+    }//ashram query ends
+
+
+    /* Trust insert query */
+    if(isset($_POST['submitted-trust'])) 
+    {
+        $a_name = trim($_POST['trust-name']);
+        $a_email = trim($_POST['trust-email']);
+        $a_phone = trim($_POST['trust-phone']);
+        $a_fax = trim($_POST['trust-fax']);
+        $a_description = trim($_POST['trust-description']);
+        $a_activities = trim($_POST['trust-activities']);
+        $a_url = trim($_POST['trust-url']);
+        $a_address1 = trim($_POST['trust-address1']);
+        $a_address2 = trim($_POST['trust-address2']);
+        $a_address3 = trim($_POST['trust-address3']);
+        $a_country = trim($_POST['trust-country']);
+        $a_state = trim($_POST['trust-state']);
+        $a_city = trim($_POST['trust-city']);
+        $a_continent = trim($_POST['trust-continent']);
+        $a_latitude = trim($_POST['trust-latitude']);
+        $a_longitude = trim($_POST['trust-longitude']);
+        $a_add = date('Y-m-d H:i:s');
+        $a_type = $_POST['submitted-trust'];
+
+        $wpdb->insert(
+                    'wp_location',
+                    array(
+                            'id' => '',
+                            'location_type' => $a_type,
+                            'name' => $a_name,
+                            'email' => $a_email,
+                            'phone' => $a_phone,
+                            'fax' => $a_fax,
+                            'description' => $a_description,
+                            'url' => $a_url,
+                            'address1' => $a_address1,
+                            'address2' => $a_address2,
+                            'address3' => $a_address3,
+                            'city' => $a_city,
+                            'state' => $a_state,
+                            'country' => $a_country,
+                            'continent' => $a_continent,
+                            'latitude' => $a_latitude,
+                            'longitude' => $a_longitude,
+                            'activities' => $a_activities,
+                            'added_on' => $a_add
+                    ),
+                    array(
+                            '%d',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+    	                    '%s',
+            		        '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%f',
+                            '%f',
+                            '%s',
+                            '%s'
+                    )
+        );
+        $trust = true;
+    }//trust query ends
+
+
+    /* center insert query */
+    if(isset($_POST['submitted-center'])) 
+    {
+        $name = trim($_POST['location-name']);
+        $description = trim($_POST['location-description']);
+        $trust = trim($_POST['location-trust']);
+        $url = trim($_POST['location-url']);
+        $phone = trim($_POST['location-phone']);
+        $fax = trim($_POST['location-fax']);
+        $email = trim($_POST['location-email']);
+        $acharya = trim($_POST['location-acharya']);
+        $president = trim($_POST['location-president']);
+        $secretary = trim($_POST['location-secretary']);
+        $treasurer = trim($_POST['location-treasurer']);
+        $address1 = trim($_POST['location-address1']);
+        $address2 = trim($_POST['location-address2']);
+        $address3 = trim($_POST['location-address3']);
+        $country = trim($_POST['location-country']);
+        $state = trim($_POST['location-state']);
+        $city = trim($_POST['location-city']);
+        $continent = trim($_POST['location-continent']);
+        $latitude = trim($_POST['location-latitude']);
+        $longitude = trim($_POST['location-longitude']);
+        $add_on = date('Y-m-d H:i:s');
+        $contact = trim($_POST['location-contact']);
+        $image = trim($_POST['location-image']);
+        $type = $_POST['submitted-center'];
+
+        $wpdb->insert(
+                    'wp_location',
+                    array(
+                            'id' => '',
+                    		'location_type' => $type,
+                            'name' => $name,
+            		        'trust' => $trust,
+                            'description' => $description,
+                            'url' => $url,
+                	        'phone' => $phone,
+                            'fax' => $fax,
+                            'email' => $email,
+                            'acharya' => $acharya,
+                            'president' => $president,
+                            'secretary' => $secretary,
+                            'treasurer' => $treasurer,
+                            'address1' => $address1,
+                            'address2' => $address2,
+                            'address3' => $address3,
+                            'city' => $city,
+                            'state' => $state,
+                            'country' => $country,
+                            'continent' => $continent,
+                    		'latitude' => $latitude,
+                            'longitude' => $longitude,
+                            'added_on' => $add_on,
+                            'contact' => $contact,
+            		        'image' => $image
+                        ),
+                        array(
+                            '%d',
+            		        '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                    		'%s',
+            		        '%f',
+                    		'%f',
+            		        '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                        	'%s',
+                        	'%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+            	            '%s',
+                            '%f',
+                            '%f',
+                            '%s',
+                            '%s',
+                    		'%s'
+                    )
+                );
+        $wpdb->query($wpdb->prepare("DELETE FROM wp_location WHERE `location_type` = 'centre' and  `name` =''" ));
+        $center = true;
+    }//center query ends
+
+    /* temple insert query */
+    if(isset($_POST['submitted-temple'])) 
+    {
+
+        $tname = trim($_POST['temple-name']);
+        $tdescription = trim($_POST['temple-description']);
+        $tdeity = trim($_POST['temple-deity']);
+        $tdate = trim($_POST['temple-date']);
+        $tadd = date('Y-m-d H:i:s');
+        $turl = trim($_POST['temple-url']);
+        $taddress1 = trim($_POST['temple-address1']);
+        $tcountry = trim($_POST['temple-country']);
+        $tstate = trim($_POST['temple-state']);
+        $tcity = trim($_POST['temple-city']);
+        $tcontinent = trim($_POST['temple-continent']);
+        $tlatitude = trim($_POST['temple-latitude']);
+        $tlongitude = trim($_POST['temple-longitude']);
+        $ttype = $_POST['submitted-temple'];
+
+        $wpdb->insert(
+                    'wp_location',
+                    array(
+                            'id' => '',
+            	   	        'location_type' => $ttype,
+                            'name' => $tname,
+                            'description' => $tdescription,
+                            'url' => $turl,
+                            'address1' => $taddress1,
+                            'city' => $tcity,
+                            'state' => $tstate,
+                            'country' => $tcountry,
+                            'continent' => $tcontinent,
+                            'latitude' => $tlatitude,
+                            'longitude' => $tlongitude,
+                    		'deity' => $tdeity,
+                    		'consecrated' => $tdate,
+                    		'added_on' => $tadd
+                    ),
+                    array(
+                            '%d',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%f',
+                            '%f',
+                    		'%s',
+                    		'%s',
+                    		'%s'
+                    )
+                );
+        $temple = true;
+    }//temple query ends
+
+    /*region insert query */
+    if(isset($_POST['submitted-region'])) 
+    {
+        $a_region = trim($_POST['region-name']);
+
+        $wpdb->insert(
+                    'wp_region',
+                    array(
+                            'id' => '',
+                            'region' => $a_region,
+                    ),
+                    array(
+                            '%d',
+                            '%s',
+                    )
+            );
+        $region = true;
+    }//region insert query ends
+
+    /* region-country insert query*/
+    if(isset($_POST['submitted-region-country'])) 
+    {
+        $a_region = $_POST['reg_country'];
+        $a_region_country = trim($_POST['region_country']);
+
+        $wpdb->insert(
+                    'wp_region_country',
+                    array(
+                            'id' => '',
+                            'region_id' => $a_region,
+                            'country' => $a_region_country,
+                    ),
+                    array(
+                            '%d',
+                            '%d',
+                            '%s',
+                    )
+                );
+        $region_country = true;
+    }// region-country query ends
+
+
+    /* country_expand_center insert query*/
+    if(isset($_POST['submitted-country-center'])) 
+    {
+        $a_country_center = trim($_POST['center_country']);
+        $a_expand = trim($_POST['expand']);
+        $wpdb->insert(
+                    'wp_country_expand_center',
+                    array(
+                            'id' => '',
+                            'center_country' => $a_country_center,
+                            'expand' => $a_expand,
+
+
+                    ),
+                    array(
+                            '%d',
+                            '%s',
+                            '%d',
+
+                    )
+                );
+        $country_center = true;
+    }//country expand center ends
+
+    /* state_expand_center query*/
+    if(isset($_POST['submitted-state-center'])) 
+    {
+        $a_state_center = trim($_POST['center_state']);
+        $a_expand = $_POST['expand'];
+        $wpdb->insert(
+                    'wp_state_expand_center',
+                    array(
+                            'id' => '',
+                            'center_state' => $a_state_center,
+                            'expand' => $a_expand,
+
+
+                    ),
+                    array(
+                            '%d',
+                            '%s',
+                            '%d',
+
+                    )
+                );
+        $state_center = true;
+    } // state expand center ends
+
+    /* School insert query*/
+    if(isset($_POST['submitted-school'])) 
+    {
+        $name = trim($_POST['school-name']);
+        $description = trim($_POST['school-description']);
+        $url = trim($_POST['school-url']);
+        $address1 = trim($_POST['school-address1']);
+        // $address2 = trim($_POST['school-address2']);
+        // $address3 = trim($_POST['school-address3']);
+        $country = trim($_POST['school-country']);
+        $state = trim($_POST['school-state']);
+        $city = trim($_POST['school-city']);
+        $pincode = trim($_POST['school-pincode']);
+        $continent = trim($_POST['school-continent']);
+        $phone = trim($_POST['school-phone']);
+        $email = trim($_POST['school-email']);
+        $affiliation = trim($_POST['school-affiliation']);
+        $type = $_POST['submitted-school'];
+
+        $wpdb->insert(
+                    'wp_school',
+                    array(
+            			'id' => '',
+            			'school_type' => $type,
+            			'name' => $name,
+            			'description' => $description,
+            			'url' => $url,
+            			'address1' => $address1,
+            			// 'address2' => $address2,
+            			// 'address3' => $address3,
+            			'city' => $city,
+            			'state' => $state,
+            			'country' => $country,
+                        'continent' => $continent,
+            			'zip' => $pincode,
+            			'phone' => $phone,
+            			'email' => $email,
+            			'affiliation' => $affiliation
+                    ),
+                    array(
+            			'%d',
+            			'%s',
+            			'%s',
+            			'%s',
+            			// '%s',
+            			// '%s',
+            			'%s',
+            			'%s',
+            			'%s',
+            			'%s',
+                        '%s',
+            			'%s',
+            			'%s',
+            			'%s',
+            			'%s',
+            			'%s'
+                    )
+                );
+        $school = true;
+    }//school ends
+
+    /* Committee insert query*/
+    if(isset($_POST['submitted-committee'])) 
+    {
+
+        $cuser = trim($_POST['committee-user']);
+        $cmember = trim($_POST['committee-type']);
+        $cname = trim($_POST['committee-name']);
+        $cphone = trim($_POST['committee-phone']);
+        $cemail = trim($_POST['committee-email']);
+        $ccenter = trim($_POST['committee-center']);
+
+        $wpdb->insert(
+                    'wp_committee',
+                    array(
+                            'id' => '',
+        	                'member_type' => $cmember,
+                            'user' => $cuser,
+                            'name' => $cname,
+                            'phone' => $cphone,
+                            'email' => $cemail,
+        		            'center' => $ccenter,
+                    ),
+                    array(
+                            '%d',
+                            '%s',
+        	                '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s'
+                    )
+                );
+        $committee = true;
+    }//committee ends
+
+
+    /* cord insert query*/
+    if(isset($_POST['submitted-chord'])) 
+    {
+
+        $tlocation = trim($_POST['chord-location']);
+        $taddress1 = trim($_POST['chord-address1']);
+        $taddress2 = trim($_POST['chord-address2']);
+        $taddress3 = trim($_POST['chord-address3']);
+        $tcountry = trim($_POST['chord-country']);
+        $tstate = trim($_POST['chord-state']);
+        $tcity = trim($_POST['chord-city']);
+        $tcontinent = trim($_POST['chord-continent']);
+        $tphone = trim($_POST['chord-phone']);
+        $temail = trim($_POST['chord-email']);
+        $ttype = $_POST['submitted-chord'];
+
+        $wpdb->insert(
+                'wp_location',
+                    array(
+                    'id' => '',
+                    'location_type' => $ttype,
+                    'location' => $tlocation,
+                    'address1' => $taddress1,
+                    'address2' => $taddress2,
+                    'address3' => $taddress3,
+                    'city' => $tcity,
+                    'state' => $tstate,
+                    'country' => $tcountry,
+                    'continent' => $tcontinent,
+                    'phone' => $tphone,
+                    'email' => $temail,
+
+                    ),
+                    array(
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    )
+                );
+            $chord = true;
+        $wpdb->query($wpdb->prepare("DELETE FROM wp_location WHERE `location_type` = 'chord' and` and  `location` =''" ));
+    }//cord ends
+
+    function display_reg_country() 
+    {
+        global $wpdb;
+        echo "<h2>Region-Country</h2>";
+
+        $ws_details = $wpdb->get_results("SELECT * FROM `wp_region_country`");
+
+        echo "<table class='loc-table'>";
+        echo "<th>ID</th>";
+        echo "<th>Region</th>";
+        echo "<th>Country</th>";
+        echo "<th></th>";
+        echo "<th></th>";
+        foreach ($ws_details as $data) 
+        {
+            $i++;
+            echo "<tr>";
+            echo "<td>".$i."</td>";
+            echo "<td>".$data->region_id."</td>";
+            echo "<td>".$data->country."</td>";
+            echo "<td><a href='/wp-admin/admin.php?page=region&update-region-country=".$data->id."'>Edit</a></td>";
+            echo "<td><a href='/wp-admin/admin.php?page=region&delete-region-country=".$data->id."'>Delete</a></td>";
+            echo "</tr>";
+        }
+        echo "</table>";
+    }//function display reg country ends
+?>

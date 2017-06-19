@@ -1,0 +1,679 @@
+<?php
+/*
+Plugin Name: CCMT Event Registration
+Plugin URI: http://google.co.in
+Description: Plugin for adding Event .
+Version: 1.0
+Author: Girish Vas 
+Author URI:
+*/
+if(isset($_POST['event-download'])) {
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Event_Register.csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    echo "ID Event_Name First_Name Middle_Name Last_Name Gender Date_of_birth Chinmaya_ID";
+    echo "\n";
+    $results = $wpdb->get_results("SELECT * FROM wp_event_register");
+    foreach ($results as $value) {
+        $id = $value->id;
+        $event = str_replace(" ",".",$value->Event_Name);
+        $fname = str_replace(" ",".",$value->first_name);
+        $mname = str_replace(" ",".",$value->middle_name);
+        $lname = str_replace(" ",".",$value->last_name);
+        $gender = str_replace(" ",".",$value->gender);
+        $dob = $value->date_of_birth;
+        $chinid = $value->Chinmaya_id;
+        echo $id." ".$event." ".$fname." ".$mname." ".$lname." ".$gender." ".$dob." ".$chinid;
+        echo "\n";
+    }
+    exit();
+}
+if (isset($_POST["from"])) {
+        $from = $_POST["from"]; // sender
+        $to = $_POST["to"];
+        $subject = $_POST["subject"];
+        $message = $_POST["message"];
+        // message lines should not exceed 70 characters (PHP rule), so wrap it
+        $message = wordwrap($message, 70);
+        // send mail
+        mail($to,$subject,$message,"From: $from\n");
+        //echo "Thank you for sending us feedback";
+}
+
+if(isset($_POST['event-add-download'])) {
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Event_Register_Address.csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    echo "ID First_Name Middle_Name Last_Name Building Block Landmark Country State City Pin Phone_Resi Mobile Email Passport_No Nationality Issue_Date Expire_Date Visa_Type Visa_No Visa_Issue_Date Visa_Expire_Date";
+    echo "\n";
+    $results = $wpdb->get_results("SELECT * FROM wp_event_register as r,wp_event_reg_address as a,wp_event_reg_passport as p WHERE r.address_id = a.address_id and r.passport_id = p.passport_id");
+    foreach ($results as $value) {
+        $id = $value->id;
+        $fname = str_replace(" ",".",$value->first_name);
+        $mname = str_replace(" ",".",$value->middle_name);
+        $lname = str_replace(" ",".",$value->last_name);
+        $building = str_replace(" ",".",$value->building);
+        $block = str_replace(" ",".",$value->block);
+        $landmark = str_replace(" ",".",$value->landmark);
+        $country = str_replace(" ",".",$value->country);
+        $state = str_replace(" ",".",$value->state);
+        $city = str_replace(" ",".",$value->city);
+        $pin = $value->postalcode;
+        $resi = $value->residenceno;
+        $mobile = $value->mobile;
+        $email = $value->email;
+        $pno = $value->passportno;
+        $nation = $value->nationnality;
+        $issuedate = $value->issuedate;
+        $expiredate = $value->expiredate;
+        $visatype = $value->visatype;
+        $visano = $value->visano;
+        $visaissuedate = $value->visaissuedate;
+        $visaexpiredate = $value->visaexpiredate;
+        echo $id." ".$fname." ".$mname." ".$lname." ".$building." ".$block." ".$landmark." ".$country." ".$state." ".$city." ".$pin." ".$resi." ".$mobile." ".$email." ".$pno." ".$nation." ".$issuedate." ".$expiredate." ".$visatype." ".$visano." ".$visaissuedate." ".$visaexpiredate;
+        echo "\n";
+    }
+    exit();
+}
+if(isset($_POST['event-acco-download'])) {
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Event_Register_Accomodation.csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    echo "ID First_Name Middle_Name Last_Name Attached_Bath Common_Bath Common_Dormitoty Individual_Cottage Sponsor";
+    echo "\n";
+    $results = $wpdb->get_results("SELECT * FROM wp_event_register as r, wp_event_reg_accomodation as a WHERE r.accomodation_id = a.accomodation_id");
+    foreach ($results as $value) {
+        $id = $value->id;
+        $fname = str_replace(" ",".",$value->first_name);
+        $mname = str_replace(" ",".",$value->middle_name);
+        $lname = str_replace(" ",".",$value->last_name);
+        $attached = $value->multisharing_attachedbath;
+        $common = $value->multisharing_commonbath;
+        $dormitory = $value->common_dormitory;
+        $cottage = $value->individual_cottage;
+        $sponsor = str_replace(" ",".",$value->sponsored_details);
+        echo $id." ".$fname." ".$mname." ".$lname." ".$attached." ".$common." ".$dormitory." ".$cottage." ".$sponsor;
+        echo "\n";
+    }
+    exit();
+}
+if(isset($_POST['event-arr-download'])) {
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Event_Register_Arrival.csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    echo "ID First_Name Middle_Name Last_Name Arrival_Date Arrival_Time Mode_of_travel Pickup Pickup_Location";
+    echo "\n";
+    $results = $wpdb->get_results("SELECT * FROM wp_event_register as r, wp_event_reg_arrival as a WHERE r.arrival_id = a.arrival_id");
+    foreach ($results as $value) {
+        $id = $value->id;
+        $fname = str_replace(" ",".",$value->first_name);
+        $mname = str_replace(" ",".",$value->middle_name);
+        $lname = str_replace(" ",".",$value->last_name);
+        $arrdate = $value->arrival_date;
+        $arrtime = $value->arrival_time;
+        $mode = $value->mode_of_arrival;
+        $pickup = $value->need_pickup;
+        $location = str_replace(" ",".",$value->location_of_pickup);
+        echo $id." ".$fname." ".$mname." ".$lname." ".$arrdate." ".$arrtime." ".$mode." ".$pickup." ".$location;
+        echo "\n";
+    }
+    exit();
+}
+if(isset($_POST['event-dep-download'])) {
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Event_Register_Departure.csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    echo "ID First_Name Middle_Name Last_Name Departure_Date Departure_Time Mode_of_travel Dropoff Dropoff_Location";
+    echo "\n";
+    $results = $wpdb->get_results("SELECT * FROM wp_event_register as r, wp_event_reg_departure as a WHERE r.departure_id = a.departure_id");
+    foreach ($results as $value) {
+        $id = $value->id;
+        $fname = str_replace(" ",".",$value->first_name);
+        $mname = str_replace(" ",".",$value->middle_name);
+        $lname = str_replace(" ",".",$value->last_name);
+        $depdate = $value->departure_date;
+        $deptime = $value->departure_time;
+        $mode = $value->mode_of_departure;
+        $dropoff = $value->need_dropoff;
+        $location = str_replace(" ",".",$value->location_of_dropoff);
+        echo $id." ".$fname." ".$mname." ".$lname." ".$depdate." ".$deptime." ".$mode." ".$dropoff." ".$location;
+        echo "\n";
+    }
+    exit();
+}
+if(isset($_POST['event-vip-download'])) {
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Event_Register_Vip.csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    echo "ID First_Name Middle_Name Last_Name Hotel Location Room Booking_From Booking_To Arrival_Time Departure_Time";
+    echo "\n";
+    $results = $wpdb->get_results("SELECT * FROM wp_event_register as r, wp_event_reg_vipbooking as a WHERE r.vipbooking_id = a.vipbooking_id");
+    foreach ($results as $value) {
+        $id = $value->id;
+        $fname = str_replace(" ",".",$value->first_name);
+        $mname = str_replace(" ",".",$value->middle_name);
+        $lname = str_replace(" ",".",$value->last_name);
+        $hotel_name = str_replace(" ",".",$value->hotel_name);
+        $location = str_replace(" ",".",$value->location);
+        $types_of_room = str_replace(" ",".",$value->types_of_room);
+        $booking_from = $value->ooking_from;
+        $booking_to = $value->booking_to;
+        $time_of_arrival = $value->time_of_arrival;
+        $time_of_departure = $value->time_of_departure;
+        $location = str_replace(" ",".",$value->location_of_dropoff);
+        echo $id." ".$fname." ".$mname." ".$lname." ".$hotel_name." ".$location." ".$types_of_room." ".$booking_from." ".$booking_to." ".$time_of_arrival." ".$time_of_departure;
+        echo "\n";
+    }
+    exit();
+}
+if(isset($_POST['event-don-download'])) {
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Event_Register_Donation.csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    echo "ID First_Name Middle_Name Last_Name Option Bank_Name Branch Date Currency Event Breakfast Lunch Dinner Donation_1 Amount_1 Donation_2 Amount_2 Donation_3 Amount_3 Total";
+    echo "\n";
+    $results = $wpdb->get_results("SELECT * FROM wp_event_register as r, wp_event_reg_donation as d, wp_event_reg_donationoption as o WHERE r.donation_id = d.donation_id and r.donationoption_id = o.donationoption_id");
+    foreach ($results as $value) {
+        $id = $value->id;
+        $fname = str_replace(" ",".",$value->first_name);
+        $mname = str_replace(" ",".",$value->middle_name);
+        $lname = str_replace(" ",".",$value->last_name);
+        $option = str_replace(" ",".",$value->option);
+        $bank_name = str_replace(" ",".",$value->bank_name);
+        $branch = str_replace(" ",".",$value->branch);
+        $dated = $value->dated;
+        $currency = str_replace(" ",".",$value->currency_for_donation);
+        $event = $value->event_donation;
+        $breakfast = $value->breakfast_bhiksa;
+        $lunch = $value->lunch_bhiksa;
+        $dinner = $value->dinner_bhiksa;
+        $don1 = $value->donationtype_1;
+        $amnt1 = $value->amount_1;
+        $don2 = $value->donationtype_2;
+        $amnt2 = $value->amount_2;
+        $don3 = $value->donationtype_3;
+        $amnt3 = $value->amount_3;
+        $total = $value->total_amount;
+        echo $id." ".$fname." ".$mname." ".$lname." ".$option." ".$bank_name." ".$branch." ".$dated." ".$currency." ".$event." ".$breakfast." ".$lunch." ".$dinner." ".$don1." ".$amnt1." ".$don2." ".$amnt2." ".$don3." ".$amnt3." ".$total;
+        echo "\n";
+    }
+    exit();
+}
+add_action('admin_menu', 'eventreg_admin_menu');
+
+function eventreg_admin_css() {
+        wp_enqueue_style( 'prefix-style', plugins_url('location_admin.css', __FILE__) );
+}
+
+function eventreg_admin_menu() {
+    add_menu_page ('CCMT','CCMT Event Reg','administrator','ccmt-eventreg','display_ccmt_eventreg' );
+    add_submenu_page('ccmt-eventreg','Event Registration','Event Registration','eventreg','eventreg','view_eventreg');
+    add_submenu_page('ccmt-eventreg','Event Reg Addr','Event Reg Add','eventregadd','eventregadd','view_eventregadd');
+    add_submenu_page('ccmt-eventreg','Event Reg Acco','Event Reg Acco','eventregacco','eventregacco','view_eventregacco');
+    add_submenu_page('ccmt-eventreg','Event Reg Arrival','Event Reg Arrival','eventregarr','eventregarr','view_eventregarr');
+    add_submenu_page('ccmt-eventreg','Event Reg Dep','Event Reg Dep','eventregdep','eventregdep','view_eventregdep');
+    add_submenu_page('ccmt-eventreg','Event Reg Vip','Event Reg Vip','eventregvip','eventregvip','view_eventregvip');
+    add_submenu_page('ccmt-eventreg','Event Reg Donation','Event Reg Donation','eventregdon','eventregdon','view_eventregdon');
+
+}
+function display_ccmt_eventreg() {
+
+}
+function view_eventreg() {
+        $con=mysqli_connect("localhost","ccmtAdmin","#us6sTek","data_gcmw");
+    if (mysqli_connect_errno())
+    {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
+    else
+    {
+        echo "<form action='.' method='post'>";
+                echo "<input class='itin' name='event-download' type='submit' value='Downlaod Event Register' style='background-color:white;border:none;color:#000;font-size:15px;cursor:pointer;'>";
+        echo "</form>";
+        echo "<h2>Event Register Form</h2>";
+        $result = mysqli_query($con,"SELECT * FROM `wp_event_register`");
+        echo "<div>";
+                echo "<table class='loc-table'>";
+                        echo "<th>ID</th>";
+                        echo "<th>Event Name</th>";
+                        echo "<th>First Name</th>";
+                        echo "<th>Middle Name</th>";
+                        echo "<th>Last Name</th>";
+                        echo "<th>Gender</th>";
+                        echo "<th>Date of Birth</th>";
+                        echo "<th>Chinmaya ID</th>";
+                        while($row = mysqli_fetch_array($result))
+                            {
+                                $eid = $row['id'];
+                                $eevent = $row['Event_Name'];
+                                $efname = $row['first_name'];
+                                $emname = $row['middle_name'];
+                                $elname = $row['last_name'];
+                                $egender = $row['gender'];
+                                $edob = $row['date_of_birth'];
+                                $echinid = $row['Chinmaya_id'];
+                                echo "<tr>";
+                                    echo "<td>" . $eid. "</td>";
+                                    echo "<td>" . $eevent. "</td>";
+                                    echo "<td>" . $efname. "</td>";
+                                    echo "<td>" . $emname. "</td>";
+                                    echo "<td>" . $elname. "</td>";
+                                    echo "<td>" . $egender. "</td>";
+                                    echo "<td>" . $edob. "</td>";
+                                    echo "<td>" . $echinid. "</td>";
+                                echo "</tr>";
+                            }
+                echo "</table>";
+        echo "</div>";
+    }
+}
+function view_eventregadd() {
+        $con=mysqli_connect("localhost","ccmtAdmin","#us6sTek","data_gcmw");
+    if (mysqli_connect_errno())
+    {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
+    else
+    {
+        echo "<form action='.' method='post'>";
+                echo "<input class='itin' name='event-add-download' type='submit' value='Downlaod Event Register Address' style='background-color:white;border:none;color:#000;font-size:15px;cursor:pointer;'>";
+        echo "</form>";
+        echo "<h2>Event Register Address Form</h2>";
+        $result = mysqli_query($con,"SELECT * FROM wp_event_register as r, wp_event_reg_address as a, wp_event_reg_passport as p WHERE r.address_id = a.address_id and r.passport_id = p.passport_id");
+        echo "<div>";
+                echo "<table class='loc-table'>";
+                        echo "<th>ID</th>";
+                        echo "<th>First Name</th>";
+                        echo "<th>Middle Name</th>";
+                        echo "<th>Last Name</th>";
+                        echo "<th>Building</th>";
+                        echo "<th>Block</th>";
+                        echo "<th>Landmark</th>";
+                        echo "<th>Country</th>";
+                        echo "<th>State</th>";
+                        echo "<th>City</th>";
+                        echo "<th>Pin Code</th>";
+                        echo "<th>Phone Resi</th>";
+                        echo "<th>Mobile</th>";
+                        echo "<th>Email</th>";
+                        echo "<th>Passport No</th>";
+                        echo "<th>Nationality</th>";
+                        echo "<th>Issue Date</th>";
+                        echo "<th>Expire Date</th>";
+                        echo "<th>Visa Type</th>";
+                        echo "<th>Visa No</th>";
+                        echo "<th>Visa issue date</th>";
+                        echo "<th>Visa expire date</th>";
+                        while($row = mysqli_fetch_array($result))
+                        {
+                            $eid = $row['id'];
+                            $efname = $row['first_name'];
+                            $emname = $row['middle_name'];
+                            $elname = $row['last_name'];
+                            $building = $row['building'];
+                            $block = $row['block'];
+                            $landmark = $row['landmark'];
+                            $ecountry = $row['country'];
+                            $estate = $row['state'];
+                            $ecity = $row['city'];
+                            $epin = $row['postalcode'];
+                            $eresi = $row['residenceno'];
+                            $emobile = $row['mobile'];
+                            $eemail = $row['email'];
+                            $epassno = $row['passportno '];
+                            $enation = $row['nationnality'];
+                            $eidate = $row['issuedate'];
+                            $eedate = $row['expiredate'];
+                            $evisa = $row['visatype'];
+                            $evisano = $row['visano'];
+                            $evisaissue = $row['visaissuedate'];
+                            $evisaexpir = $row['visaexpiredate'];
+                            echo "<tr id='$eid'>";
+                                echo "<td>" . $eid. "</td>";
+                                echo "<td>" . $efname. "</td>";
+                                echo "<td>" . $emname. "</td>";
+                                echo "<td>" . $elname. "</td>";
+                                echo "<td>" . $building. "</td>";
+                                echo "<td>" . $block. "</td>";
+                                echo "<td>" . $landmark. "</td>";
+                                echo "<td>" . $ecountry. "</td>";
+                                echo "<td>" . $estate. "</td>";
+                                echo "<td>" . $ecity. "</td>";
+                                echo "<td>" . $epin. "</td>";
+                                echo "<td>" . $eresi. "</td>";
+                                echo "<td>" . $emobile. "</td>";
+                                echo "<td>" . $eemail. "</td>";
+                                echo "<td>" . $epassno. "</td>";
+                                echo "<td>" . $enation. "</td>";
+                                echo "<td>" . $eidate. "</td>";
+                                echo "<td>" . $eedate. "</td>";
+                                echo "<td>" . $evisa. "</td>";
+                                echo "<td>" . $evisano. "</td>";
+                                echo "<td>" . $evisaissue. "</td>";
+                                echo "<td>" . $evisaexpir. "</td>";
+				echo "<td><input type='button' name='reply' id='$eid' class='reply' value='Reply'></td>";
+                                         echo "<div class='plugin_box plugin_box-$eid'>    <!-- OUR content_box  DIV-->";
+                                        echo "<h1 style='font-weight:bold;text-align:center;font-size:30px;'></h1>";
+                                        echo "<a class='pluginBoxClose'>Close</a>";
+                                        echo "<div class='projectcontent'>";
+                                        echo    "<div class='select-style'>
+                                      <form method='post' action='.'>
+                                        From: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' name='from'><br/>
+                                        To: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' value='$eemail' name='to' readonly><br/>
+                                      Subject:&nbsp;&nbsp;<input type='text' name='subject' value='test' readonly><br/>
+                                       <p><span style='vertical-align:top;'>Message:</span><textarea rows='5' cols='30' name='message' ></textarea></p>
+                                       <div style='width:520px;margin-left:200px;'><input type='submit' name='submit' value='Send'></div>
+                                       </form>
+                                       </div>";
+
+                                        echo "</div>";
+                                        echo "</div><!-- content_box -->";
+
+                            echo "</tr>";
+                        }
+                echo "</table>";
+        echo "</div>";
+    }
+}
+function view_eventregacco() {
+        $con=mysqli_connect("localhost","ccmtAdmin","#us6sTek","data_gcmw");
+    if (mysqli_connect_errno())
+    {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
+    else
+    {
+        echo "<form action='.' method='post'>";
+            echo "<input class='itin' name='event-acco-download' type='submit' value='Downlaod Event Accomodation' style='background-color:white;border:none;color:#000;font-size:15px;cursor:pointer;'>";
+        echo "</form>";
+        echo "<h2>Event Register Accomodation Form</h2>";
+        $result = mysqli_query($con,"SELECT * FROM wp_event_register as r, wp_event_reg_accomodation as a WHERE r.accomodation_id = a.accomodation_id");
+        echo "<div>";
+            echo "<table class='loc-table'>";
+                echo "<th>ID</th>";
+                echo "<th>First Name</th>";
+                echo "<th>Middle Name</th>";
+                echo "<th>Last Name</th>";
+                echo "<th>Attached Bath</th>";
+                echo "<th>Common Bath</th>";
+                echo "<th>Common Dormitory</th>";
+                echo "<th>Individual Cottage</th>";
+                echo "<th>Sponsor Details</th>";
+                while($row = mysqli_fetch_array($result))
+                {
+                    $eid = $row['id'];
+                    $efname = $row['first_name'];
+                    $emname = $row['middle_name'];
+                    $elname = $row['last_name'];
+                    $attached = $row['multisharing_attachedbath'];
+                    $common = $row['multisharing_commonbath'];
+                    $dormitory = $row['common_dormitory'];
+                    $cottage = $row['individual_cottage'];
+                    $sponsor = $row['sponsored_details'];
+                    echo "<tr>";
+                        echo "<td>" . $eid. "</td>";
+                        echo "<td>" . $efname. "</td>";
+                        echo "<td>" . $emname. "</td>";
+                        echo "<td>" . $elname. "</td>";
+                        echo "<td>" . $attached. "</td>";
+                        echo "<td>" . $common. "</td>";
+                        echo "<td>" . $dormitory. "</td>";
+                        echo "<td>" . $cottage. "</td>";
+                        echo "<td>" . $sponsor. "</td>";
+                    echo "</tr>";
+                }
+            echo "</table>";
+        echo "</div>";
+    }
+}
+function view_eventregarr() {
+        $con=mysqli_connect("localhost","ccmtAdmin","#us6sTek","data_gcmw");
+    if (mysqli_connect_errno())
+    {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
+    else
+    {
+        echo "<form action='.' method='post'>";
+            echo "<input class='itin' name='event-arr-download' type='submit' value='Downlaod Event Arrival' style='background-color:white;border:none;color:#000;font-size:15px;cursor:pointer;'>";
+        echo "</form>";
+        echo "<h2>Event Register Arrival Form</h2>";
+        $result = mysqli_query($con,"SELECT * FROM wp_event_register as r, wp_event_reg_arrival as a WHERE r.arrival_id = a.arrival_id");
+        echo "<div>";
+            echo "<table class='loc-table'>";
+                echo "<th>ID</th>";
+                echo "<th>First Name</th>";
+                echo "<th>Middle Name</th>";
+                echo "<th>Last Name</th>";
+                echo "<th>Arrival Date</th>";
+                echo "<th>Arrival time</th>";
+                echo "<th>Mode of Arrival</th>";
+                echo "<th>Pickup</th>";
+                echo "<th>Pickup Location</th>";
+                while($row = mysqli_fetch_array($result))
+                {
+                    $eid = $row['id'];
+                    $efname = $row['first_name'];
+                    $emname = $row['middle_name'];
+                    $elname = $row['last_name'];
+                    $arrdate = $row['arrival_date'];
+                    $arrtime = $row['arrival_time'];
+                    $modarr = $row['mode_of_arrival'];
+                    $pickup = $row['need_pickup'];
+                    $pickuploc = $row['location_of_pickup'];
+                    echo "<tr>";
+                        echo "<td>" . $eid. "</td>";
+                        echo "<td>" . $efname. "</td>";
+                        echo "<td>" . $emname. "</td>";
+                        echo "<td>" . $elname. "</td>";
+                        echo "<td>" . $arrdate. "</td>";
+                        echo "<td>" . $arrtime. "</td>";
+                        echo "<td>" . $modarr. "</td>";
+                        echo "<td>" . $pickup. "</td>";
+                        echo "<td>" . $pickuploc. "</td>";
+                    echo "</tr>";
+                }
+            echo "</table>";
+        echo "</div>";
+    }
+}
+function view_eventregdep() {
+        $con=mysqli_connect("localhost","ccmtAdmin","#us6sTek","data_gcmw");
+    if (mysqli_connect_errno())
+    {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
+    else
+    {
+        echo "<form action='.' method='post'>";
+            echo "<input class='itin' name='event-dep-download' type='submit' value='Downlaod Event Departure' style='background-color:white;border:none;color:#000;font-size:15px;cursor:pointer;'>";
+        echo "</form>";
+        echo "<h2>Event Register Departure Form</h2>";
+        $result = mysqli_query($con,"SELECT * FROM wp_event_register as r, wp_event_reg_departure as d WHERE r.departure_id = d.departure_id");
+        echo "<div>";
+            echo "<table class='loc-table'>";
+                echo "<th>ID</th>";
+                echo "<th>First Name</th>";
+                echo "<th>Middle Name</th>";
+                echo "<th>Last Name</th>";
+                echo "<th>Departure Date</th>";
+                echo "<th>Departure time</th>";
+                echo "<th>Mode of Departure</th>";
+                echo "<th>Dropoff</th>";
+                echo "<th>Dropoff Location</th>";
+                while($row = mysqli_fetch_array($result))
+                {
+                    $eid = $row['id'];
+                    $efname = $row['first_name'];
+                    $emname = $row['middle_name'];
+                    $elname = $row['last_name'];
+                    $depdate = $row['departure_date'];
+                    $deptime = $row['departure_time'];
+                    $moddep = $row['mode_of_departure'];
+                    $dropoff = $row['need_dropoff'];
+                    $dropoffloc = $row['location_of_dropoff'];
+                    echo "<tr>";
+                        echo "<td>" . $eid. "</td>";
+                        echo "<td>" . $efname. "</td>";
+                        echo "<td>" . $emname. "</td>";
+                        echo "<td>" . $elname. "</td>";
+                        echo "<td>" . $depdate. "</td>";
+                        echo "<td>" . $deptime. "</td>";
+                        echo "<td>" . $moddep. "</td>";
+                        echo "<td>" . $dropoff. "</td>";
+                        echo "<td>" . $dropoffloc. "</td>";
+                    echo "</tr>";
+                }
+            echo "</table>";
+        echo "</div>";
+    }
+}
+function view_eventregvip() {
+        $con=mysqli_connect("localhost","ccmtAdmin","#us6sTek","data_gcmw");
+    if (mysqli_connect_errno())
+    {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
+    else
+    {
+        echo "<form action='.' method='post'>";
+            echo "<input class='itin' name='event-vip-download' type='submit' value='Downlaod Event Vip Register' style='background-color:white;border:none;color:#000;font-size:15px;cursor:pointer;'>";
+        echo "</form>";
+        echo "<h2>Event Register Vip Form</h2>";
+        $result = mysqli_query($con,"SELECT * FROM wp_event_register as r, wp_event_reg_vipbooking as v WHERE r.vipbooking_id = v.vipbooking_id");
+        echo "<div>";
+            echo "<table class='loc-table'>";
+                echo "<th>ID</th>";
+                echo "<th>First Name</th>";
+                echo "<th>Middle Name</th>";
+                echo "<th>Last Name</th>";
+                echo "<th>Hotel Name</th>";
+                echo "<th>Location</th>";
+                echo "<th>Room type</th>";
+                echo "<th>Booking from</th>";
+                echo "<td>Booking to</th>";
+                echo "<th>Arrival Time</th>";
+                echo "<th>Departure Time</th>";
+                while($row = mysqli_fetch_array($result))
+                {
+                    $eid = $row['id'];
+                    $efname = $row['first_name'];
+                    $emname = $row['middle_name'];
+                    $elname = $row['last_name'];
+                    $hotel = $row['hotel_name'];
+                    $location = $row['location'];
+                    $room = $row['types_of_room'];
+                    $bfrom = $row['booking_from'];
+                    $bto = $row['booking_to'];
+                    $arrtime = $row['time_of_arrival'];
+                    $deptime = $row['time_of_departure'];
+                    echo "<tr>";
+                        echo "<td>" . $eid. "</td>";
+                        echo "<td>" . $efname. "</td>";
+                        echo "<td>" . $emname. "</td>";
+                        echo "<td>" . $elname. "</td>";
+                        echo "<td>" . $hotel. "</td>";
+                        echo "<td>" . $location. "</td>";
+                        echo "<td>" . $room. "</td>";
+                        echo "<td>" . $bfrom. "</td>";
+                        echo "<td>" . $bto. "</td>";
+                        echo "<td>" . $arrtime. "</td>";
+                        echo "<td>" . $deptime. "</td>";
+                    echo "</tr>";
+                }
+            echo "</table>";
+        echo "</div>";
+    }
+}
+function view_eventregdon() {
+        $con=mysqli_connect("localhost","ccmtAdmin","#us6sTek","data_gcmw");
+    if (mysqli_connect_errno())
+    {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
+    else
+    {
+        echo "<form action='.' method='post'>";
+            echo "<input class='itin' name='event-don-download' type='submit' value='Downlaod Event Donation Register' style='background-color:white;border:none;color:#000;font-size:15px;cursor:pointer;'>";
+        echo "</form>";
+        echo "<h2>Event Register Donation Form</h2>";
+        $result = mysqli_query($con,"SELECT * FROM wp_event_register as r, wp_event_reg_donation as d, wp_event_reg_donationoption as o WHERE r.donation_id = d.donation_id and r.donationoption_id = o.donationoption_id");
+        echo "<div>";
+            echo "<table class='loc-table'>";
+                echo "<th>ID</th>";
+                echo "<th>First Name</th>";
+                echo "<th>Middle Name</th>";
+                echo "<th>Last Name</th>";
+                echo "<th>Option</th>";
+                echo "<th>Bank Name</th>";
+                echo "<th>Branch</th>";
+                echo "<th>Date</th>";
+                echo "<th>Currency</th>";
+                echo "<th>Event</th>";
+                echo "<th>Breakfast</th>";
+                echo "<th>Lunch</th>";
+                echo "<th>Dinner</th>";
+                echo "<th>Donation 1</th>";
+                echo "<th>Amount 1</th>";
+                echo "<th>Donation 2</th>";
+                echo "<th>Amount 2</th>";
+                echo "<th>Donation 3</th>";
+                echo "<th>Amount 3</th>";
+                echo "<th>Total</th>";
+
+                while($row = mysqli_fetch_array($result))
+                {
+                    $eid = $row['id'];
+                    $efname = $row['first_name'];
+                    $emname = $row['middle_name'];
+                    $elname = $row['last_name'];
+                    $option = $row['option'];
+                    $bname = $row['bank_name'];
+                    $branch = $row['branch'];
+                    $date = $row['dated'];
+                    $currency = $row['currency_for_donation'];
+                    $event = $row['event_donation'];
+                    $breakfast = $row['breakfast_bhiksa'];
+                    $lunch = $row['lunch_bhiksa'];
+                    $dinner = $row['dinner_bhiksa'];
+                    $donation1 = $row['donationtype_1'];
+                    $amount1 = $row['amount_1'];
+                    $donation2 = $row['donationtype_2'];
+                    $amount2 = $row['amount_2'];
+                    $donation3 = $row['donationtype_3'];
+                    $amount3 = $row['amount_3'];
+                    $total = $row['total_amount'];
+                    echo "<tr>";
+                        echo "<td>" . $eid. "</td>";
+                        echo "<td>" . $efname. "</td>";
+                        echo "<td>" . $emname. "</td>";
+                        echo "<td>" . $elname. "</td>";
+                        echo "<td>" . $option. "</td>";
+                        echo "<td>" . $bname. "</td>";
+                        echo "<td>" . $branch. "</td>";
+                        echo "<td>" . $date. "</td>";
+                        echo "<td>" . $currency. "</td>";
+                        echo "<td>" . $event. "</td>";
+                        echo "<td>" . $breakfast. "</td>";
+                        echo "<td>" . $lunch. "</td>";
+                        echo "<td>" . $dinner. "</td>";
+                        echo "<td>" . $donation1. "</td>";
+                        echo "<td>" . $amount1. "</td>";
+                        echo "<td>" . $donation2. "</td>";
+                        echo "<td>" . $amount2. "</td>";
+                        echo "<td>" . $donation3. "</td>";
+                        echo "<td>" . $amount3. "</td>";
+                        echo "<td>" . $total. "</td>";
+                    echo "</tr>";
+                }
+            echo "</table>";
+        echo "</div>";
+    }
+}
