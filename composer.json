@@ -1,7 +1,7 @@
 {
   "name": "Pallavi-P/plugin",
   "description": "Logging for PHP 5.3",
-  "type": "wordpress-plugin",
+  "type": "Library",
   "authors": [
     {
       "name": "Pallavi",
@@ -9,8 +9,17 @@
     }
   ],
   "require": {
-        "composer/installers": "~1.0"
-    }
+    "composer-plugin-api": "^1.0"
+  },
+
+  "require-dev": {
+    "composer/composer": "^1.0",
+    "phpunit/phpunit": ">=4.8.35"
+  },
+  
+  "conflict": {
+    "composer/installers": "<1.0.6"
+  },
   
   
 }
